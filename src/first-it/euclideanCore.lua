@@ -3,15 +3,25 @@
 -- =========================================
 
 function bjorklund(steps, pulses)
-    if pulses > steps then pulses = steps end
     if pulses < 0 then pulses = 0 end
+    if pulses > steps then pulses = steps end
+    if pulses == 0 then
+        local r = {}
+        for i = 1, steps do r[i] = 0 end
+        return r
+    end
+    if pulses == steps then
+        local r = {}
+        for i = 1, steps do r[i] = 1 end
+        return r
+    end
 
     local pattern = {}
     local counts = {}
     local remainders = {}
 
-    local divisor = steps - pulses
     remainders[1] = pulses
+    local divisor = steps - pulses
     local level = 1
 
     while true do
@@ -26,17 +36,17 @@ function bjorklund(steps, pulses)
 
     counts[level] = divisor
 
-    local function build(level)
-        if level == -1 then
+    local function build(l)
+        if l == 0 then
             table.insert(pattern, 0)
-        elseif level == -2 then
+        elseif l == -1 then
             table.insert(pattern, 1)
         else
-            for i = 1, counts[level] do
-                build(level - 1)
+            for i = 1, counts[l] do
+                build(l - 1)
             end
-            if remainders[level] ~= 0 then
-                build(level - 2)
+            if remainders[l] ~= 0 then
+                build(l - 2)
             end
         end
     end
