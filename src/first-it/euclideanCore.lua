@@ -66,5 +66,5 @@ for i = 1, #pattern do
     result = result .. pattern[i] .. " "
 end
 
---reaper.ShowConsoleMsg("Pattern: " .. result .. "\n")
+reaper.ShowConsoleMsg("Pattern: " .. result .. "\n")
 print("Pattern: " .. result .. "\n")
