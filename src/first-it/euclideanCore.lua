@@ -1,6 +1,4 @@
--- =========================================
--- EUCLIDEAN RHYTHM (BJORKLUND ALGORITHM)
--- =========================================
+--bjorklund algorithm
 
 function bjorklund(steps, pulses)
     if pulses < 0 then pulses = 0 end
@@ -55,7 +53,7 @@ function bjorklund(steps, pulses)
     return pattern
 end
 
--- TEST
+-- test
 local steps = 16
 local pulses = 5
 
