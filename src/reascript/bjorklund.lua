@@ -1,5 +1,4 @@
 --bjorklund algorithm
-
 function bjorklund(steps, pulses)
     if pulses < 0 then pulses = 0 end
     if pulses > steps then pulses = steps end
@@ -19,6 +18,7 @@ function bjorklund(steps, pulses)
     local remainders = {}
 
     remainders[1] = pulses
+
     local divisor = steps - pulses
     local level = 1
 
@@ -52,17 +52,3 @@ function bjorklund(steps, pulses)
     build(level)
     return pattern
 end
-
--- test
-local steps = 16
-local pulses = 5
-
-local pattern = bjorklund(steps, pulses)
-
-local result = ""
-for i = 1, #pattern do
-    result = result .. pattern[i] .. " "
-end
-
-reaper.ShowConsoleMsg("Pattern: " .. result .. "\n")
-print("Pattern: " .. result .. "\n")
