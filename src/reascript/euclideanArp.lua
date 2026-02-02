@@ -27,7 +27,27 @@ function orderNotes(pitches, order)
     return pitches
 end
 
-function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate)
+function stepLength(ppqPerQN, step_len)
+    local len
+    if step_len == 1 then
+        len = ppqPerQN*8
+    end
+    if step_len == 1 then
+        len = ppqPerQN*4
+    end
+    if step_len == 1 then
+        len = ppqPerQN
+    end
+    if step_len == 1 then
+        len = ppqPerQN / 2
+    end
+    if step_len == 1 then
+        len = ppqPerQN / 4
+    end
+    return len
+end
+
+function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, step_len)
     -- count notes in the midi item
     -- this function returns 3 values, we only need the second one, _ ignores the first value
     local _, noteCount = reaper.MIDI_CountEvts(take)
@@ -50,9 +70,11 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate)
 
     local ppqPerQN = reaper.MIDI_GetPPQPosFromProjQN(take, 1) - reaper.MIDI_GetPPQPosFromProjQN(take, 0)
 
-    --local stepPPQ = ppqPerQN / 4  --could be interesting to give the user the option to choose
     local totalPPQ = itemEndPPQ - itemStartPPQ
     local stepPPQ = totalPPQ / steps
+    if step_len ~= 0 then
+        stepPPQ = stepLength(ppqPerQN, step_len)
+    end
     -- apply the partern using the bjorklund algorithm
     local pattern = bjorklund(steps, pulses)
     local step = 0
