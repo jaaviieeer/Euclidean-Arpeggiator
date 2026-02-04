@@ -32,16 +32,16 @@ function stepLength(ppqPerQN, step_len)
     if step_len == 1 then
         len = ppqPerQN*8
     end
-    if step_len == 1 then
+    if step_len == 2 then
         len = ppqPerQN*4
     end
-    if step_len == 1 then
+    if step_len == 3 then
         len = ppqPerQN
     end
-    if step_len == 1 then
+    if step_len == 4 then
         len = ppqPerQN / 2
     end
-    if step_len == 1 then
+    if step_len == 5 then
         len = ppqPerQN / 4
     end
     return len
