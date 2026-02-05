@@ -35,9 +35,5 @@ for i = 0, noteCount - 1 do
         })
     end
 end
---sort notes (at first we sort based on pitch, will up to user)
-table.sort(notes, function (a, b)
-    return a.pitch < b.pitch
-end)
 
 reaper.ShowConsoleMsg("Notes to use: " .. #notes .. "\n")
