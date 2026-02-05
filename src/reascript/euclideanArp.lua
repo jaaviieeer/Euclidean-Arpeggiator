@@ -61,15 +61,15 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
     -- order the notes
     pitches = orderNotes(pitches, order)
     -- note timing
-    local item = reaper.GetMediaItemTake_Item(take)
+    local item = reaper.GetMediaItemTake_Item(take) --identify the item to get the time position
     local itemPos = reaper.GetMediaItemInfo_Value(item, "D_POSITION")
     local itemLen = reaper.GetMediaItemInfo_Value(item, "D_LENGTH")
-
+    --midi positions
     local itemStartPPQ = reaper.MIDI_GetPPQPosFromProjTime(take, itemPos) --item initial position
     local itemEndPPQ = reaper.MIDI_GetPPQPosFromProjTime(take, itemPos + itemLen) --item final position
-
+    --midi units per quarter note
     local ppqPerQN = reaper.MIDI_GetPPQPosFromProjQN(take, 1) - reaper.MIDI_GetPPQPosFromProjQN(take, 0)
-
+    --we divide the midi in steps
     local totalPPQ = itemEndPPQ - itemStartPPQ
     local stepPPQ = totalPPQ / steps
     if step_len ~= 0 then
@@ -81,7 +81,7 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
     local noteIndex = 1
 
     while true do
-        local patternStep = (step % steps) + 1
+        local patternStep = (step % steps) + 1 --cycle
         local startppq = itemStartPPQ + step * stepPPQ
 
         if startppq >= itemEndPPQ then break end
@@ -98,7 +98,7 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
                 endppq,
                 0,
                 pitch,
-                100,
+                100, --may be interesting to make it variable
                 true
             )
 
