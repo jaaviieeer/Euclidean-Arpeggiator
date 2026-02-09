@@ -27,27 +27,11 @@ function orderNotes(pitches, order)
     return pitches
 end
 
-function stepLength(ppqPerQN, step_len)
-    local len
-    if step_len == 1 then
-        len = ppqPerQN*8
-    end
-    if step_len == 2 then
-        len = ppqPerQN*4
-    end
-    if step_len == 3 then
-        len = ppqPerQN
-    end
-    if step_len == 4 then
-        len = ppqPerQN / 2
-    end
-    if step_len == 5 then
-        len = ppqPerQN / 4
-    end
-    return len
+function stepLength(ppqPerQN, note_fraction)
+    return ppqPerQN * 4 * note_fraction
 end
 
-function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, step_len)
+function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, note_fraction)
     -- count notes in the midi item
     -- this function returns 3 values, we only need the second one, _ ignores the first value
     local _, noteCount = reaper.MIDI_CountEvts(take)
@@ -72,13 +56,40 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
     --we divide the midi in steps
     local totalPPQ = itemEndPPQ - itemStartPPQ
     local stepPPQ = totalPPQ / steps
-    if step_len ~= 0 then
-        stepPPQ = stepLength(ppqPerQN, step_len)
+    if note_fraction ~= 0 then
+        stepPPQ = stepLength(ppqPerQN, note_fraction)
     end
     -- apply the partern using the bjorklund algorithm
     local pattern = bjorklund(steps, pulses)
     local step = 0
     local noteIndex = 1
+    local stepsNeeded = 0
+    local notesPlaced = 0
+
+    while notesPlaced < #pitches do
+        local patternStep = (stepsNeeded % steps) + 1
+        if pattern[patternStep] == 1 then
+            notesPlaced = notesPlaced + 1
+        end
+        stepsNeeded = stepsNeeded + 1
+    end
+
+    local totalPPQNeeded = stepsNeeded * stepPPQ
+
+    local currentItemPPQ = itemEndPPQ - itemStartPPQ
+
+    if totalPPQNeeded > currentItemPPQ then
+        local newItemEndTime = reaper.MIDI_GetProjTimeFromPPQPos(
+            take,
+            itemStartPPQ + totalPPQNeeded
+        )
+
+        reaper.SetMediaItemInfo_Value(
+            item,
+            "D_LENGTH",
+            newItemEndTime - itemPos
+        )
+    end
 
     while true do
         local patternStep = (step % steps) + 1 --cycle
