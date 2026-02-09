@@ -91,13 +91,11 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
     reaper.SetMediaItemInfo_Value(item, "B_LOOPSRC", 0)
 
     local step = 0
-    local notesPlaced = 0
+    notesPlaced = 0
 
     while notesPlaced < #pitches do
         local patternStep = (step % steps) + 1 --cycle
         local startppq = itemStartPPQ + step * stepPPQ
-
-        if startppq >= itemEndPPQ then break end
 
         if pattern[patternStep] == 1 then
             local pitch = pitches[noteIndex]
