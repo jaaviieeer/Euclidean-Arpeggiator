@@ -56,12 +56,9 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
     --we divide the midi in steps
     local totalPPQ = itemEndPPQ - itemStartPPQ
     local stepPPQ = totalPPQ / steps
-    if note_fraction ~= 0 then
-        stepPPQ = stepLength(ppqPerQN, note_fraction)
-    end
+    stepPPQ = stepLength(ppqPerQN, note_fraction)
     -- apply the partern using the bjorklund algorithm
     local pattern = bjorklund(steps, pulses)
-    local step = 0
     local noteIndex = 1
     local stepsNeeded = 0
     local notesPlaced = 0
@@ -76,22 +73,27 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
 
     local totalPPQNeeded = stepsNeeded * stepPPQ
 
-    local currentItemPPQ = itemEndPPQ - itemStartPPQ
 
-    if totalPPQNeeded > currentItemPPQ then
-        local newItemEndTime = reaper.MIDI_GetProjTimeFromPPQPos(
-            take,
-            itemStartPPQ + totalPPQNeeded
-        )
+    local newItemEndTime = reaper.MIDI_GetProjTimeFromPPQPos(
+        take,
+        itemStartPPQ + totalPPQNeeded
+    )
 
-        reaper.SetMediaItemInfo_Value(
-            item,
-            "D_LENGTH",
-            newItemEndTime - itemPos
-        )
-    end
+    reaper.SetMediaItemInfo_Value(
+        item,
+        "D_LENGTH",
+        newItemEndTime - itemPos
+    )
 
-    while true do
+    itemEndPPQ = reaper.MIDI_GetPPQPosFromProjTime(take,itemPos + reaper.GetMediaItemInfo_Value(item, "D_LENGTH")
+)
+
+    reaper.SetMediaItemInfo_Value(item, "B_LOOPSRC", 0)
+
+    local step = 0
+    local notesPlaced = 0
+
+    while notesPlaced < #pitches do
         local patternStep = (step % steps) + 1 --cycle
         local startppq = itemStartPPQ + step * stepPPQ
 
@@ -114,6 +116,7 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
             )
 
             noteIndex = (noteIndex % #pitches) + 1
+            notesPlaced = notesPlaced + 1
         end
         step = step + 1
     end
