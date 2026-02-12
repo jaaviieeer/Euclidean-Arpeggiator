@@ -9,6 +9,9 @@ local note_len_steps = 1 --lenght of the note in steps
 local gate = 1 --% of the step that uses a note
 local order = 1 --1 up, 2 down, 3 ping pong, 4 random
 local note_fraction = 1/4 --1 whole, 1/2 half, 1/4 quarter, etc all fractions supported
+local octave_steps = 4 -- for the octave pattern
+local octave_pulses = 1 -- for the octave pattern
+local cycles = 2 -- number of cycles 
 -- we take the selected item
 local item = reaper.GetSelectedMediaItem(0, 0)
 if not item then
@@ -22,6 +25,6 @@ if not take or not reaper.TakeIsMIDI(take) then
     return
 end
 
-generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, note_fraction)
+generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, note_fraction, octave_steps, octave_pulses, cycles)
 
 reaper.Undo_EndBlock("Euclidean Arp", -1)

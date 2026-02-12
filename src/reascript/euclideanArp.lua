@@ -1,5 +1,6 @@
 local script_path = debug.getinfo(1, "S").source:match("@?(.*[/\\])")
 dofile(script_path .. "./bjorklund.lua")
+math.randomseed(os.time())
 
 function orderNotes(pitches, order)
     if order == 1 then --up
@@ -31,7 +32,7 @@ function stepLength(ppqPerQN, note_fraction)
     return ppqPerQN * 4 * note_fraction
 end
 
-function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, note_fraction)
+function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, note_fraction, octave_steps, octave_pulses, cycles)
     -- count notes in the midi item
     -- this function returns 3 values, we only need the second one, _ ignores the first value
     local _, noteCount = reaper.MIDI_CountEvts(take)
@@ -54,15 +55,18 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
     --midi units per quarter note
     local ppqPerQN = reaper.MIDI_GetPPQPosFromProjQN(take, 1) - reaper.MIDI_GetPPQPosFromProjQN(take, 0)
     --we divide the midi in steps
-    local totalPPQ = itemEndPPQ - itemStartPPQ
-    local stepPPQ = totalPPQ / steps
-    stepPPQ = stepLength(ppqPerQN, note_fraction)
+    local stepPPQ = stepLength(ppqPerQN, note_fraction)
     -- apply the partern using the bjorklund algorithm
     local pattern = bjorklund(steps, pulses)
     local noteIndex = 1
+    -- apply the octave pattern (if not 0)
+    local octave_pattern = nil
+    if octave_steps > 0 and octave_pulses > 0 then
+        octave_pattern = bjorklund(octave_steps, octave_pulses)
+    end
 
-    local totalPPQNeeded = steps * stepPPQ
-
+    local totalSteps = steps * cycles
+    local totalPPQNeeded = totalSteps * stepPPQ
 
     local newItemEndTime = reaper.MIDI_GetProjTimeFromPPQPos(
         take,
@@ -80,8 +84,6 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
 
     reaper.SetMediaItemInfo_Value(item, "B_LOOPSRC", 0)
 
-    local totalSteps = steps
-
     for step = 0, totalSteps - 1 do
         local patternStep = (step % steps) + 1 --cycle
         local startppq = itemStartPPQ + step * stepPPQ
@@ -90,6 +92,13 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
             local pitch = pitches[noteIndex]
             local baseLen = note_len_steps * stepPPQ
             local endppq = math.min(startppq + baseLen * gate, itemEndPPQ)
+
+            if octave_pattern then
+                local octStep = (step % octave_steps) + 1
+                if octave_pattern[octStep] == 1 then
+                    pitch = pitch + 12
+                end
+            end
 
             reaper.MIDI_InsertNote(
                 take,
@@ -104,7 +113,6 @@ function generateEuclideanArp(take, steps, pulses, order, note_len_steps, gate, 
 
             noteIndex = (noteIndex % #pitches) + 1
         end
-        step = step + 1
     end
     reaper.MIDI_Sort(take)
 end
