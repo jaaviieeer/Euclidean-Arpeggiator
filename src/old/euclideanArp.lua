@@ -1,8 +1,4 @@
-local script_path = debug.getinfo(1, "S").source:match("@?(.*[/\\])")
-dofile(script_path .. "./bjorklund.lua")
-math.randomseed(os.time())
-
-function orderNotes(pitches, order)
+local function orderNotes(pitches, order)
     if order == 1 then --up
         table.sort(pitches)
     end
@@ -28,7 +24,7 @@ function orderNotes(pitches, order)
     return pitches
 end
 
-function stepLength(ppqPerQN, note_fraction)
+local function stepLength(ppqPerQN, note_fraction)
     return ppqPerQN * 4 * note_fraction
 end
 

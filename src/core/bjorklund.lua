@@ -1,5 +1,6 @@
 --bjorklund algorithm
-function bjorklund(steps, pulses)
+local M = {}
+function M.bjorklund(steps, pulses)
     if pulses < 0 then pulses = 0 end
     if pulses > steps then pulses = steps end
     if pulses == 0 then
@@ -52,3 +53,5 @@ function bjorklund(steps, pulses)
     build(level)
     return pattern
 end
+
+return M
