@@ -61,12 +61,6 @@ local function loop()
     ImGui.SeparatorText(ctx, "Extra")--EXTRA OPTIONS
     if ImGui.Button(ctx, "Generate") then
       local ok, msg = controller.apply(config)
-      if ok then
-        set_status("Applied ✅")
-      else
-        set_status("Error: " .. tostring(msg))
-        reaper.ShowConsoleMsg("Error: " .. tostring(msg) .. "\n")
-      end
     end
     ImGui.End(ctx)
   end
