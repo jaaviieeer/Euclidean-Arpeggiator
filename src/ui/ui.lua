@@ -23,7 +23,7 @@ local function loop()
   local visible, open = ImGui.Begin(ctx, 'Euclidean Arpegiator', true)
   if visible then
     ImGui.Text(ctx, 'Euclidean Arpegiator by Javier Pasamontes Martin')
-    ImGui.SeparatorText(ctx, "Rhythm")--STEPS AND PULSES
+    ImGui.SeparatorText(ctx, "Rhythm") --STEPS AND PULSES
     local changed
     changed, config.steps = ImGui.SliderInt(ctx, "Steps", config.steps, 1, 128)
     if changed then
@@ -37,28 +37,32 @@ local function loop()
         config.pulses = config.steps
       end
     end
-    ImGui.Separator(ctx)--DENSITY OF PULSES
+    ImGui.Separator(ctx)                   --DENSITY OF PULSES
     ImGui.Text(ctx, string.format("Density: %.2f%%", (config.pulses / config.steps) * 100))
-    ImGui.SeparatorText(ctx, "Note order")--NOTE ORDER
+    ImGui.SeparatorText(ctx, "Note order") --NOTE ORDER
     if ImGui.Button(ctx, "Ascending") then
-      config.order =1
+      config.order = 1
     end
     ImGui.SameLine(ctx)
     if ImGui.Button(ctx, "Descending") then
-      config.order =2
+      config.order = 2
     end
     ImGui.SameLine(ctx)
     if ImGui.Button(ctx, "Ping-Pong") then
-      config.order =3
+      config.order = 3
     end
     ImGui.SameLine(ctx)
     if ImGui.Button(ctx, "Random") then
-      config.order =4
+      config.order = 4
     end
-    ImGui.SeparatorText(ctx, "Note lenght")--NOTE LENGTH
-    ImGui.SeparatorText(ctx, "Cycles")--CYCLES
+    ImGui.SeparatorText(ctx, "Note lenght") --NOTE LENGTH
+    _, config.gate = ImGui.SliderDouble(ctx, "Gate", config.gate, 0.1, 1.0)
+    _, config.note_fraction = ImGui.SliderDouble(ctx, "Sync", config.note_fraction, 0.0, 1.0)
+    ImGui.SameLine(ctx)
+    _, config.note_fraction = ImGui.InputDouble(ctx, "Sync", config.note_fraction, 0.0, 1.0)
+    ImGui.SeparatorText(ctx, "Cycles") --CYCLES
     _, config.cycles = ImGui.SliderInt(ctx, "Cycles", config.cycles, 1, 128)
-    ImGui.SeparatorText(ctx, "Extra")--EXTRA OPTIONS
+    ImGui.SeparatorText(ctx, "Extra")  --EXTRA OPTIONS
     if ImGui.Button(ctx, "Generate") then
       local ok, msg = controller.apply(config)
     end
