@@ -1,0 +1,12 @@
+desc: MIDI Euclidean Arpeggiator
+
+slider1:16<1,128,1>Steps
+slider2:9<1,64,1>Pulses
+slider3:1<0.05,1,0.01>Gate
+slider4:0.25<0.01,1,0.01>Sync (whole=1)
+slider5:1<1,16,1>Note length (steps)
+slider6:1<1,4,1>Order (1 Up,2 Down,3 PingPong,4 Random)
+slider7:0<0,1,1>Octave pattern enabled
+slider8:4<1,128,1>Oct Steps
+slider9:1<0,128,1>Oct Pulses
+slider10:1<0,1,1>Run (0 off, 1 on)

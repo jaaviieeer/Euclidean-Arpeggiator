@@ -84,6 +84,11 @@ local function loop()
     end
     if config.note_fraction < 0.01 then config.note_fraction = 0.01 end
     if config.note_fraction > 1.0 then config.note_fraction = 1.0 end
+    ImGui.Text(ctx, "Note length (steps)")
+    ImGui.SameLine(ctx)
+    _, config.note_len_steps = ImGui.SliderInt(ctx, "##LenStepsSlider", config.note_len_steps, 1, 5)
+    ImGui.SameLine(ctx)
+    _, config.note_len_steps = ImGui.InputInt(ctx, "##LensStepsInput", config.note_len_steps)
     ImGui.SeparatorText(ctx, "Cycles") --CYCLES
     ImGui.Text(ctx, "Cycles")
     ImGui.SameLine(ctx)
