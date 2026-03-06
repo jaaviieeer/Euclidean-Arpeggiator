@@ -1,11 +1,11 @@
 desc: MIDI Euclidean Arpeggiator
 
 slider1:16<1,128,1>Steps
-slider2:9<1,64,1>Pulses
+slider2:9<0,64,1>Pulses
 slider3:1<0.05,1,0.01>Gate
 slider4:0.25<0.01,1,0.01>Sync (whole=1)
 slider5:1<1,16,1>Note length (steps)
-slider6:1<1,4,1Order (1 Up,2 Down,3 PingPong,4 Random)>Mode
+slider6:1<1,4,1{Up,Down,PingPong,Random}>Mode
 slider7:0<0,1,1>Octave pattern enabled
 slider8:4<1,128,1>Oct Steps
 slider9:1<0,128,1>Oct Pulses
@@ -15,14 +15,14 @@ in_pin:none
 out_pin:none
 
 @slider 
-steps=slider1;
-pulses=slider2;
-gate=slider3
+steps=slider1|0;
+pulses=slider2|0;
+gate=slider3;
 gate<0?gate=0:gate>1?gate=1;
-sync=slider4
-notelen=slider5
-noteorder=slider6
-octaveEnable=slider7
-octaveSteps=slider8
-octavePulses=slider9
-run=slider10
+sync=slider4;
+notelen=slider5|0;
+noteorder=slider6|0;
+octaveEnable=slider7|0;
+octaveSteps=slider8|0;
+octavePulses=slider9|0;
+run=slider10|0;
