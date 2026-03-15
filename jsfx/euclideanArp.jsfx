@@ -22,6 +22,15 @@ octpat = pat + MAX_STEPS;
 counts = octpat + MAX_STEPS;
 remainders = counts + MAX_STEPS + 2;
 pattern_len = 0;
+MAX_HELD = 16;
+MAX_ORD = 32;
+held = remainders + MAX_STEPS + 2;//notas pulsadas
+ord = held + MAX_HELD;//notas ordenadas
+ord2 = ord + MAX_ORD;//aux para pingpong
+held_count = 0;//notas activas
+held_dirty = 1;//flag para indicar que hace falta regenerar
+arp_note_idx = 0;
+active_pitch = -1;
 i = 0;
 loop(MAX_STEPS,
   pat[i] = 0;
@@ -33,6 +42,19 @@ i = 0;
 loop(MAX_STEPS + 2,
   counts[i] = 0;
   remainders[i] = 0;
+  i += 1;
+);
+
+i = 0;
+loop(MAX_HELD,
+  held[i] = -1;
+  i += 1;
+);
+
+i = 0;
+loop(MAX_ORD,
+  ord[i] = -1;
+  ord2[i] = -1;
   i += 1;
 );
 
@@ -149,34 +171,52 @@ octaveEnable && octavePulses > 0 ? (
 
 @block
 while (
-midirecv(ts,msg1,msg23) ? 
-(
-  m=msg1&240;
-  note=msg23&127;
-  (m == 9*16 && msg23>=256) ? 
-  (
-    notelist[note] < 0.001 ? (
-      notelist[note]=velmode ? velmode : ((msg23/256.0)|0);
-      notecnt+=1;
-    );
-  ) : (m == 8*16 || m == 9*16) ? (
-    notelist[note] > 0.001 ? (
-      lastnote==note ? (
-        midisend(ts,8*16,note); // send note off
-        lastnote=-1;
+  midirecv(ts, msg1, msg23) ? (
+    m = msg1 & 240;
+    note = msg23 & 127;
+    vel = (msg23 / 256) | 0;
+
+    is_note_on  = (m == 9*16) && (vel > 0);
+    is_note_off = (m == 8*16) || ((m == 9*16) && (vel == 0));
+
+    is_note_on ? (
+      found = 0;
+      i = 0;
+      loop(MAX_HELD,
+        held[i] == note ? found = 1;
+        i += 1;
       );
-          
-      notecnt-=1;
-      notelist[note]=0.0; 
+
+      found == 0 ? (
+        i = 0;
+        loop(MAX_HELD,
+          held[i] < 0 && found == 0 ? (
+            held[i] = note;
+            found = 1;
+            held_count += 1;
+            held_dirty = 1;
+            last_vel = vel;
+          );
+          i += 1;
+        );
+      );
+      // consumimos note on, no hacemos midisend
+    ) :
+    is_note_off ? (
+      i = 0;
+      loop(MAX_HELD,
+        held[i] == note ? (
+          held[i] = -1;
+          held_count -= 1;
+          held_dirty = 1;
+        );
+        i += 1;
+      );
+      // consumimos note off
+    ) :
+    (
+      // otros mensajes MIDI sí pasan
+      midisend(ts, msg1, msg23);
     );
-  ) : (
-    midisend(ts,msg1,msg23); 
   );
-  bla=1;
 );
-);
-notecnt < 1 && lastnote>=0 ? 
-(
-  midisend(0,8*16,lastnote); // send note off
-  lastnote=-1;
-); 
