@@ -14,21 +14,138 @@ slider10:1<0,1,1>Run (0 off, 1 on)
 in_pin:none
 out_pin:none
 
+@init
+//reserva de memoria
+MAX_STEPS = 128;
+pat = 0;
+octpat = pat + MAX_STEPS;
+counts = octpat + MAX_STEPS;
+remainders = counts + MAX_STEPS + 2;
+pattern_len = 0;
+i = 0;
+loop(MAX_STEPS,
+  pat[i] = 0;
+  octpat[i] = 0;
+  i += 1;
+);
+
+i = 0;
+loop(MAX_STEPS + 2,
+  counts[i] = 0;
+  remainders[i] = 0;
+  i += 1;
+);
+
+function bj_build(out_arr, level) local(i) (
+  level == 0 ? (
+    out_arr[pattern_len] = 0;
+    pattern_len += 1;
+  ) :
+  level == -1 ? (
+    out_arr[pattern_len] = 1;
+    pattern_len += 1;
+  ) :
+  (
+    i = 0;
+    loop(counts[level],
+      bj_build(out_arr, level - 1);
+      i += 1;
+    );
+
+    remainders[level] != 0 ? (
+      bj_build(out_arr, level - 2);
+    );
+  );
+);
+
+function bjorklund_pattern(out_arr, steps_in, pulses_in) local(divisor, level, i) (
+  // normalización
+  steps_in < 1 ? steps_in = 1;
+  pulses_in < 0 ? pulses_in = 0;
+  pulses_in > steps_in ? pulses_in = steps_in;
+
+  // limpiar array de salida
+  i = 0;
+  loop(MAX_STEPS,
+    out_arr[i] = 0;
+    i += 1;
+  );
+
+  // casos triviales
+  pulses_in == 0 ? (
+    i = 0;
+    loop(steps_in,
+      out_arr[i] = 0;
+      i += 1;
+    );
+  ) :
+  pulses_in == steps_in ? (
+    i = 0;
+    loop(steps_in,
+      out_arr[i] = 1;
+      i += 1;
+    );
+  ) :
+  (
+    // reset arrays auxiliares
+    i = 0;
+    loop(MAX_STEPS + 2,
+      counts[i] = 0;
+      remainders[i] = 0;
+      i += 1;
+    );
+
+    remainders[1] = pulses_in;
+
+    divisor = steps_in - pulses_in;
+    level = 1;
+
+    while(
+      counts[level] = floor(divisor / remainders[level]);
+      remainders[level + 1] = divisor % remainders[level];
+      divisor = remainders[level];
+      level += 1;
+
+      remainders[level] > 1;
+    );
+
+    counts[level] = divisor;
+
+    pattern_len = 0;
+    bj_build(out_arr, level);
+  );
+);
+
 @slider 
 steps=slider1|0;
-pulses=slider2|0;
+pulses=slider2|0; 
+pulses > steps ? pulses = steps;
+
 gate=slider3;
 gate<0?gate=0:gate>1?gate=1;
+
 sync=slider4;
 notelen=slider5|0;
 noteorder=slider6|0;
+
 octaveEnable=slider7|0;
 octaveSteps=slider8|0;
 octavePulses=slider9|0;
+octavePulses > octaveSteps ? octavePulses = octaveSteps;
+
 run=slider10|0;
 
-@init
-notelist=0;
+bjorklund_pattern(pat, steps, pulses);
+
+octaveEnable && octavePulses > 0 ? (
+  bjorklund_pattern(octpat, octaveSteps, octavePulses);
+) : (
+  i = 0;
+  loop(MAX_STEPS,
+    octpat[i] = 0;
+    i += 1;
+  );
+);
 
 @block
 while (
