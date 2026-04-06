@@ -7,7 +7,6 @@ local controller = dofile(script_path .. "../controller.lua")
 local config = {
   steps = 15,
   pulses = 9,
-  note_len_steps = 1,    --lenght of the note in steps
   gate = 1,              --% of the step that uses a note
   order = 1,             --1 up, 2 down, 3 ping pong, 4 random
   note_fraction = 1 / 4, --1 whole, 1/2 half, 1/4 quarter, etc all fractions supported
@@ -63,7 +62,7 @@ local function loop()
     ImGui.SeparatorText(ctx, "Note lenght") --NOTE LENGTH
     ImGui.Text(ctx, "Gate")
     ImGui.SameLine(ctx)
-    _, config.gate = ImGui.SliderDouble(ctx, "##Gate", config.gate, 0.1, 1.0)
+    _, config.gate = ImGui.SliderDouble(ctx, "##Gate", config.gate, 0.1, 5.0)
     ImGui.Text(ctx, "Sync")
     ImGui.SameLine(ctx)
     _, config.note_fraction = ImGui.SliderDouble(ctx, "##SyncSlider", config.note_fraction, 0.0, 1.0)
@@ -84,11 +83,6 @@ local function loop()
     end
     if config.note_fraction < 0.01 then config.note_fraction = 0.01 end
     if config.note_fraction > 1.0 then config.note_fraction = 1.0 end
-    ImGui.Text(ctx, "Note length (steps)")
-    ImGui.SameLine(ctx)
-    _, config.note_len_steps = ImGui.SliderInt(ctx, "##LenStepsSlider", config.note_len_steps, 1, 5)
-    ImGui.SameLine(ctx)
-    _, config.note_len_steps = ImGui.InputInt(ctx, "##LensStepsInput", config.note_len_steps)
     ImGui.SeparatorText(ctx, "Cycles") --CYCLES
     ImGui.Text(ctx, "Cycles")
     ImGui.SameLine(ctx)

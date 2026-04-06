@@ -8,7 +8,6 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
     local steps = tonumber(config.steps) or 0
     local pulses = tonumber(config.pulses) or 0
     local cycles = tonumber(config.cycles) or 0
-    local note_len_steps = tonumber(config.note_len_steps) or 1
     local gate = tonumber(config.gate) or 1
     local note_fraction = tonumber(config.note_fraction) or (1/4)
     local order = tonumber(config.order) or 1
@@ -16,7 +15,7 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
     local octave_pulses = tonumber(config.octave_pulses) or 0
 
     local stepPPQ = time.step_length_ppq(ppqPerQN, note_fraction)
-    local baseLen = note_len_steps * stepPPQ
+    local baseLen = stepPPQ
     local pattern = bjor.bjorklund(steps, pulses)
 
     local octave_pattern = nil
