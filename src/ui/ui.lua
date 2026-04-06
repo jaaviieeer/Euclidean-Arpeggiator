@@ -14,6 +14,7 @@ local config = {
   octave_steps = 0,      -- for the octave pattern
   octave_pulses = 0,     -- for the octave pattern
   cycles = 2,             -- number of cycles
+  cycle_length = 15,      --cycle lenght (steps)
   octave_enabled = false
 }
 
@@ -101,6 +102,9 @@ local function loop()
     ImGui.Text(ctx, "Cycles")
     ImGui.SameLine(ctx)
     _, config.cycles = ImGui.SliderInt(ctx, "##Cycles", config.cycles, 1, 128)
+    ImGui.Text(ctx, "Cycle length")
+    ImGui.SameLine(ctx)
+    _, config.cycle_length = ImGui.SliderInt(ctx, "##Cycle length", config.cycle_length, 1, config.steps)
     ImGui.SeparatorText(ctx, "Extra") --EXTRA OPTIONS
     ImGui.SeparatorText(ctx, "Octave shifting pattern")
     local changed_enable

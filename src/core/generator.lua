@@ -8,6 +8,7 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
     local steps = tonumber(config.steps) or 0
     local pulses = tonumber(config.pulses) or 0
     local cycles = tonumber(config.cycles) or 0
+    local cycle_length = tonumber(config.cycle_length) or steps
     local gate = tonumber(config.gate) or 1
     local note_fraction = tonumber(config.note_fraction) or (1/4)
     local order = tonumber(config.order) or 1
@@ -25,11 +26,11 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
 
     local ordered = pitch.order_notes(pitches, order)
     local noteIndex = 1
-    local totalSteps = steps * cycles
+    local totalSteps = cycle_length * cycles
     local events = {}
 
     for step = 0, totalSteps - 1 do
-        local patternStep = (step % steps) + 1
+        local patternStep = (step % cycle_length) + 1
         if pattern[patternStep] == 1 then
             local p = ordered[noteIndex]
 
