@@ -14,6 +14,8 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
     local order = tonumber(config.order) or 1
     local octave_steps = tonumber(config.octave_steps) or 0
     local octave_pulses = tonumber(config.octave_pulses) or 0
+    local jump_steps = tonumber(config.jump_steps) or 0
+    local jump_pulses = tonumber(config.jump_pulses) or 0
 
     local stepPPQ = time.step_length_ppq(ppqPerQN, note_fraction)
     local baseLen = stepPPQ
@@ -22,6 +24,11 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
     local octave_pattern = nil
     if octave_steps > 0 and octave_pulses > 0 then
         octave_pattern = bjor.bjorklund(octave_steps, octave_pulses)
+    end
+
+    local jump_pattern = nil
+    if jump_steps > 0 and jump_pulses > 0 then
+        jump_pattern = bjor.bjorklund(jump_steps, jump_pulses)
     end
 
     local ordered = pitch.order_notes(pitches, order)
@@ -49,7 +56,10 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
                 vel = 100,
                 chan = 0
             }
-
+            if jump_pattern then
+                local jumpStep = (step % jump_steps) + 1
+                if jump_pattern[jumpStep] == 1 then noteIndex = (noteIndex % #ordered) + 1 end
+            end
             noteIndex = (noteIndex % #ordered) + 1
         end
     end

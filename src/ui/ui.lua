@@ -15,11 +15,15 @@ local config = {
   octave_pulses = 0,     -- for the octave pattern
   cycles = 2,             -- number of cycles
   cycle_length = 15,      --cycle lenght (steps)
-  octave_enabled = false
+  octave_enabled = false,
+  jump_enabled = false,
+  jump_steps = 0,
+  jump_pulses = 0,
 }
 
 local pattern = bj.bjorklund(config.steps, config.pulses)
 local octave_pattern = bj.bjorklund(config.octave_steps, config.octave_pulses)
+local jump_pattern = bj.bjorklund(config.jump_steps, config.jump_pulses)
 
 local status = ""
 local function set_status(msg) status = tostring(msg or "") end
@@ -133,6 +137,35 @@ local function loop()
     end
     octave_pattern = bj.bjorklund(config.octave_steps, config.octave_pulses)
     ImGui.Text(ctx, visualize_pattern(octave_pattern))
+    ImGui.EndDisabled(ctx)
+    ImGui.Separator(ctx)
+    ImGui.SeparatorText(ctx, "Jumping pattern")
+    local changed_enable
+    changed_enable, config.jump_enabled = ImGui.Checkbox(ctx, "Enable Jumping Pattern", config.jump_enabled or false)
+    if changed_enable and not config.jump_enabled then
+      config.jump_steps = 0
+      config.jump_pulses = 0
+    end
+    ImGui.BeginDisabled(ctx, not config.jump_enabled)
+    local changed
+    ImGui.Text(ctx, "Steps")
+    ImGui.SameLine(ctx)
+    changed, config.jump_steps = ImGui.SliderInt(ctx, "##JumpSteps", config.jump_steps, 1, 128)
+    if changed then
+      if config.jump_pulses > config.jump_steps then
+        config.jump_pulses = config.jump_steps
+      end
+    end
+    ImGui.Text(ctx, "Pulses")
+    ImGui.SameLine(ctx)
+    changed, config.jump_pulses = ImGui.SliderInt(ctx, "##JumpPulses", config.jump_pulses, 0, config.jump_steps)
+    if changed then
+      if config.jump_pulses > config.jump_steps then
+        config.jump_pulses = config.jump_steps
+      end
+    end
+    jump_pattern = bj.bjorklund(config.jump_steps, config.jump_pulses)
+    ImGui.Text(ctx, visualize_pattern(jump_pattern))
     ImGui.EndDisabled(ctx)
     ImGui.Separator(ctx)
     if ImGui.Button(ctx, "Generate") then
