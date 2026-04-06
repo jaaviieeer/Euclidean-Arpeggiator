@@ -3,6 +3,7 @@ local ImGui = require 'imgui' '0.10'
 local ctx = ImGui.CreateContext('Euclidean Arp')
 local script_path = debug.getinfo(1, "S").source:match("@?(.*[/\\])")
 local controller = dofile(script_path .. "../controller.lua")
+local bj = dofile(script_path .. "../core/bjorklund.lua")
 
 local config = {
   steps = 15,
@@ -10,14 +11,25 @@ local config = {
   gate = 1,              --% of the step that uses a note
   order = 1,             --1 up, 2 down, 3 ping pong, 4 random
   note_fraction = 1 / 4, --1 whole, 1/2 half, 1/4 quarter, etc all fractions supported
-  octave_steps = 4,      -- for the octave pattern
-  octave_pulses = 1,     -- for the octave pattern
+  octave_steps = 0,      -- for the octave pattern
+  octave_pulses = 0,     -- for the octave pattern
   cycles = 2,             -- number of cycles
   octave_enabled = false
 }
 
+local pattern = bj.bjorklund(config.steps, config.pulses)
+local octave_pattern = bj.bjorklund(config.octave_steps, config.octave_pulses)
+
 local status = ""
 local function set_status(msg) status = tostring(msg or "") end
+
+local function visualize_pattern(pattern)
+  local parts = {}
+  for i = 1, #pattern do
+    parts[i] = pattern[i] == 1 and "■" or "□"
+  end
+  return table.concat(parts, " ")
+end
 
 local function loop()
   local visible, open = ImGui.Begin(ctx, 'Euclidean Arpegiator', true)
@@ -41,6 +53,8 @@ local function loop()
         config.pulses = config.steps
       end
     end
+    pattern = bj.bjorklund(config.steps, config.pulses)
+    ImGui.Text(ctx, visualize_pattern(pattern))
     ImGui.Separator(ctx)                   --DENSITY OF PULSES
     ImGui.Text(ctx, string.format("Density: %.2f%%", (config.pulses / config.steps) * 100))
     ImGui.SeparatorText(ctx, "Note order") --NOTE ORDER
@@ -113,6 +127,8 @@ local function loop()
         config.octave_pulses = config.octave_steps
       end
     end
+    octave_pattern = bj.bjorklund(config.octave_steps, config.octave_pulses)
+    ImGui.Text(ctx, visualize_pattern(octave_pattern))
     ImGui.EndDisabled(ctx)
     ImGui.Separator(ctx)
     if ImGui.Button(ctx, "Generate") then
