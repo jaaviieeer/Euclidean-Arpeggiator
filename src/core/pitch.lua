@@ -26,4 +26,10 @@ function M.order_notes(pitches, order)
     return pitches
 end
 
+function M.cycle_notes(pitches)
+    local first = table.remove(pitches, 1)
+    table.insert(pitches, first)
+    return pitches
+end
+
 return M

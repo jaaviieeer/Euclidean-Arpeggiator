@@ -19,6 +19,7 @@ local config = {
   jump_enabled = false,
   jump_steps = 0,
   jump_pulses = 0,
+  cycling_enabled = false,
 }
 
 local pattern = bj.bjorklund(config.steps, config.pulses)
@@ -110,6 +111,7 @@ local function loop()
     ImGui.SameLine(ctx)
     _, config.cycle_length = ImGui.SliderInt(ctx, "##Cycle length", config.cycle_length, 1, config.steps)
     ImGui.SeparatorText(ctx, "Extra") --EXTRA OPTIONS
+    _, config.cycling_enabled = ImGui.Checkbox(ctx, "Enable note list cycling", config.cycling_enabled or false)
     ImGui.SeparatorText(ctx, "Octave shifting pattern")
     local changed_enable
     changed_enable, config.octave_enabled = ImGui.Checkbox(ctx, "Enable Octave Pattern", config.octave_enabled or false)

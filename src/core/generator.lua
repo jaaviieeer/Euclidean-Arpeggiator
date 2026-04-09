@@ -35,6 +35,7 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
     local noteIndex = 1
     local totalSteps = cycle_length * cycles
     local events = {}
+    local cycle_count = 0
 
     for step = 0, totalSteps - 1 do
         local patternStep = (step % cycle_length) + 1
@@ -62,6 +63,13 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
             end
             noteIndex = (noteIndex % #ordered) + 1
         end
+        cycle_count = cycle_count + 1
+            if cycle_count >= cycle_length then
+                cycle_count = 0
+                if config.cycling_enabled then
+                    ordered = pitch.cycle_notes(ordered)
+                end
+            end
     end
 
     local totalPPQNeeded = totalSteps * stepPPQ
