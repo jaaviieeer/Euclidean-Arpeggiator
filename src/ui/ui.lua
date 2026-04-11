@@ -79,10 +79,83 @@ local function loop()
     if ImGui.RadioButton(ctx, "Random", config.order == 4) then
       config.order = 4
     end
-    ImGui.SeparatorText(ctx, "Note lenght") --NOTE LENGTH
+    ImGui.SeparatorText(ctx, "Gate") --NOTE LENGTH
     ImGui.Text(ctx, "Gate")
     ImGui.SameLine(ctx)
     _, config.gate = ImGui.SliderDouble(ctx, "##Gate", config.gate, 0.1, 5.0)
+    ImGui.SeparatorText(ctx, "Note lenght") --NOTE LENGTH
+    ImGui.Text(ctx, "Straight")
+    ImGui.SameLine(ctx)
+    --notas normales
+    if ImGui.RadioButton(ctx, "Whole", config.note_fraction == 1) then
+      config.note_fraction = 1
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Half", config.note_fraction == 0.5) then
+      config.note_fraction = 0.5
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Quarter", config.note_fraction == 0.25) then
+      config.note_fraction = 0.25
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Eighth", config.note_fraction == 0.125) then
+      config.note_fraction = 0.125
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Sixteenth", config.note_fraction == 0.0625) then
+      config.note_fraction = 0.0625
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Thirty-second", config.note_fraction == 0.03125) then
+      config.note_fraction = 0.03125
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Sixty-fourth", config.note_fraction == 0.015625) then
+      config.note_fraction = 0.015625
+    end
+    ImGui.Separator(ctx)
+    --notas normales
+    ImGui.Text(ctx, "Dotted")
+    ImGui.SameLine(ctx)
+    --notas puntillo
+    if ImGui.RadioButton(ctx, "Dotted Half", config.note_fraction == 3/4) then
+      config.note_fraction = 3/4
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Dotted Quarter", config.note_fraction == 3/8) then
+      config.note_fraction = 3/8
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Dotted Eighth", config.note_fraction == 3/16) then
+      config.note_fraction = 3/16
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Dotted Sixteenth", config.note_fraction == 3/32) then
+      config.note_fraction = 3/32
+    end
+    ImGui.Separator(ctx)
+    --notas puntillo
+    ImGui.Text(ctx, "Triplets")
+    ImGui.SameLine(ctx)
+    --notas triples
+    if ImGui.RadioButton(ctx, "Whole Triplet", config.note_fraction == 1/3) then
+      config.note_fraction = 1/3
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Half Triplet", config.note_fraction == 1/6) then
+      config.note_fraction = 1/6
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Quarter Triplet", config.note_fraction == 1/12) then
+      config.note_fraction = 1/12
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Eighth Triplet", config.note_fraction == 1/24) then
+      config.note_fraction = 1/24
+    end
+    ImGui.Separator(ctx)
+    --notas triples
     ImGui.Text(ctx, "Sync")
     ImGui.SameLine(ctx)
     _, config.note_fraction = ImGui.SliderDouble(ctx, "##SyncSlider", config.note_fraction, 0.0, 1.0)
@@ -140,7 +213,6 @@ local function loop()
     octave_pattern = bj.bjorklund(config.octave_steps, config.octave_pulses)
     ImGui.Text(ctx, visualize_pattern(octave_pattern))
     ImGui.EndDisabled(ctx)
-    ImGui.Separator(ctx)
     ImGui.SeparatorText(ctx, "Jumping pattern")
     local changed_enable
     changed_enable, config.jump_enabled = ImGui.Checkbox(ctx, "Enable Jumping Pattern", config.jump_enabled or false)
