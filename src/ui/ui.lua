@@ -13,13 +13,15 @@ local config = {
   note_fraction = 1 / 4, --1 whole, 1/2 half, 1/4 quarter, etc all fractions supported
   octave_steps = 0,      -- for the octave pattern
   octave_pulses = 0,     -- for the octave pattern
-  cycles = 2,             -- number of cycles
-  cycle_length = 15,      --cycle lenght (steps)
+  cycles = 2,            -- number of cycles
+  cycle_length = 15,     --cycle lenght (steps)
   octave_enabled = false,
   jump_enabled = false,
   jump_steps = 0,
   jump_pulses = 0,
   cycling_enabled = false,
+  multiple_chords_enabled = false,
+  multiple_interval = 1, --interval for cycling through chords
 }
 
 local pattern = bj.bjorklund(config.steps, config.pulses)
@@ -119,40 +121,40 @@ local function loop()
     ImGui.Text(ctx, "Dotted")
     ImGui.SameLine(ctx)
     --notas puntillo
-    if ImGui.RadioButton(ctx, "Dotted Half", config.note_fraction == 3/4) then
-      config.note_fraction = 3/4
+    if ImGui.RadioButton(ctx, "Dotted Half", config.note_fraction == 3 / 4) then
+      config.note_fraction = 3 / 4
     end
     ImGui.SameLine(ctx)
-    if ImGui.RadioButton(ctx, "Dotted Quarter", config.note_fraction == 3/8) then
-      config.note_fraction = 3/8
+    if ImGui.RadioButton(ctx, "Dotted Quarter", config.note_fraction == 3 / 8) then
+      config.note_fraction = 3 / 8
     end
     ImGui.SameLine(ctx)
-    if ImGui.RadioButton(ctx, "Dotted Eighth", config.note_fraction == 3/16) then
-      config.note_fraction = 3/16
+    if ImGui.RadioButton(ctx, "Dotted Eighth", config.note_fraction == 3 / 16) then
+      config.note_fraction = 3 / 16
     end
     ImGui.SameLine(ctx)
-    if ImGui.RadioButton(ctx, "Dotted Sixteenth", config.note_fraction == 3/32) then
-      config.note_fraction = 3/32
+    if ImGui.RadioButton(ctx, "Dotted Sixteenth", config.note_fraction == 3 / 32) then
+      config.note_fraction = 3 / 32
     end
     ImGui.Separator(ctx)
     --notas puntillo
     ImGui.Text(ctx, "Triplets")
     ImGui.SameLine(ctx)
     --notas triples
-    if ImGui.RadioButton(ctx, "Whole Triplet", config.note_fraction == 1/3) then
-      config.note_fraction = 1/3
+    if ImGui.RadioButton(ctx, "Whole Triplet", config.note_fraction == 1 / 3) then
+      config.note_fraction = 1 / 3
     end
     ImGui.SameLine(ctx)
-    if ImGui.RadioButton(ctx, "Half Triplet", config.note_fraction == 1/6) then
-      config.note_fraction = 1/6
+    if ImGui.RadioButton(ctx, "Half Triplet", config.note_fraction == 1 / 6) then
+      config.note_fraction = 1 / 6
     end
     ImGui.SameLine(ctx)
-    if ImGui.RadioButton(ctx, "Quarter Triplet", config.note_fraction == 1/12) then
-      config.note_fraction = 1/12
+    if ImGui.RadioButton(ctx, "Quarter Triplet", config.note_fraction == 1 / 12) then
+      config.note_fraction = 1 / 12
     end
     ImGui.SameLine(ctx)
-    if ImGui.RadioButton(ctx, "Eighth Triplet", config.note_fraction == 1/24) then
-      config.note_fraction = 1/24
+    if ImGui.RadioButton(ctx, "Eighth Triplet", config.note_fraction == 1 / 24) then
+      config.note_fraction = 1 / 24
     end
     ImGui.Separator(ctx)
     --notas triples
@@ -240,6 +242,40 @@ local function loop()
     end
     jump_pattern = bj.bjorklund(config.jump_steps, config.jump_pulses)
     ImGui.Text(ctx, visualize_pattern(jump_pattern))
+    ImGui.EndDisabled(ctx)
+    ImGui.SeparatorText(ctx, "Multiple chords") --MULTIPLE CHORDS
+    ImGui.Text(ctx,
+      "When enabled you will have to adjust an interval where the arpeggiator will pick the next chords to use")
+    local changed_enable
+    changed_enable, config.multiple_chords_enabled = ImGui.Checkbox(ctx, "Enable multiple chords",
+      config.multiple_chords_enabled or false)
+    if changed_enable and not config.multiple_chords_enabled then
+      config.multiple_interval = 0
+    end
+    ImGui.BeginDisabled(ctx, not config.multiple_chords_enabled)
+    ImGui.Text(ctx, "Take chord every N bars")
+    ImGui.SameLine(ctx)
+    --compases
+    if ImGui.RadioButton(ctx, "1/4 bar", config.multiple_interval == 1 / 4) then
+      config.multiple_interval = 1 / 4
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "1/2 bar", config.multiple_interval == 1 / 2) then
+      config.multiple_interval = 1 / 2
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "1 bar", config.multiple_interval == 1) then
+      config.multiple_interval = 1
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "2 bars", config.multiple_interval == 2) then
+      config.multiple_interval = 2
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "4 bars", config.multiple_interval == 4) then
+      config.multiple_interval = 4
+    end
+    --compases   
     ImGui.EndDisabled(ctx)
     ImGui.Separator(ctx)
     if ImGui.Button(ctx, "Generate") then
