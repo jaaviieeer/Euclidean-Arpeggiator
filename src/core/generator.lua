@@ -107,7 +107,12 @@ function M.build_events_from_chord_sequence(pitches, config, ppqPerQN, dependenc
         jump_pattern = bjor.bjorklund(jump_steps, jump_pulses)
     end
 
-    local ordered = pitch.order_notes(pitches, order)
+    local ordered = {}
+    for i = 1, #pitches do
+        local chord = pitches[i]
+        local ordered_chord = pitch.order_notes(chord, order)
+        table.insert(ordered, ordered_chord)
+    end
     local noteIndex = 1
     local totalSteps = cycle_length * cycles
     local events = {}
