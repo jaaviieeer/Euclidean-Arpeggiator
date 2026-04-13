@@ -1,15 +1,34 @@
 local M = {}
 
-function M.read_and_clear_pitches_from_take(take)
+function M.read_pitches_from_take(take)
     local _, noteCount = reaper.MIDI_CountEvts(take)
     -- take notes pitches as it is the info we need
     local pitches = {}
     for i = noteCount - 1, 0, -1 do
         local _, _, _, _, _, _, pitch = reaper.MIDI_GetNote(take, i)
         table.insert(pitches, pitch)
-        reaper.MIDI_DeleteNote(take, i)
     end
     return pitches
+end
+
+function M.read_pitches_from_active_window(take, startppq, endppq)
+    local _, noteCount = reaper.MIDI_CountEvts(take)
+    -- take notes pitches as it is the info we need
+    local pitches = {}
+    for i = noteCount - 1, 0, -1 do
+        local _, _, _, sppq, eppq, _, pitch = reaper.MIDI_GetNote(take, i)
+        if sppq < endppq and eppq > startppq then
+            table.insert(pitches, pitch)
+        end
+    end
+    return pitches
+end
+
+function M.clear_pitches_from_take(take)
+    local _, noteCount = reaper.MIDI_CountEvts(take)
+    for i = noteCount - 1, 0, -1 do
+        reaper.MIDI_DeleteNote(take, i)
+    end
 end
 
 function M.get_item_timing(take)

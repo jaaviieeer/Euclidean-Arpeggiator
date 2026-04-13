@@ -23,7 +23,7 @@ function M.apply(config)
     end
 
     reaper.Undo_BeginBlock()
-    local pitches = reaperInteraction.read_and_clear_pitches_from_take(take)
+    local pitches = reaperInteraction.read_pitches_from_take(take)
     local timing = reaperInteraction.get_item_timing(take)
     local events, totalPPQNeeded = generator.build_events(pitches, config, timing.ppqPerQN,
         { bjor = bjor, pitch = pitch, time = time })
