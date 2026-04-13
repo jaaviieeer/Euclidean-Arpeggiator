@@ -21,7 +21,7 @@ local config = {
   jump_pulses = 0,
   cycling_enabled = false,
   multiple_chords_enabled = false,
-  multiple_interval = 1, --interval for cycling through chords
+  multiple_chord_interval = 1, --interval for cycling through chords
 }
 
 local pattern = bj.bjorklund(config.steps, config.pulses)
@@ -256,24 +256,24 @@ local function loop()
     ImGui.Text(ctx, "Take chord every N bars")
     ImGui.SameLine(ctx)
     --compases
-    if ImGui.RadioButton(ctx, "1/4 bar", config.multiple_interval == 1 / 4) then
-      config.multiple_interval = 1 / 4
+    if ImGui.RadioButton(ctx, "1/4 bar", config.multiple_chord_interval == 1 / 4) then
+      config.multiple_chord_interval = 1 / 4
     end
     ImGui.SameLine(ctx)
-    if ImGui.RadioButton(ctx, "1/2 bar", config.multiple_interval == 1 / 2) then
-      config.multiple_interval = 1 / 2
+    if ImGui.RadioButton(ctx, "1/2 bar", config.multiple_chord_interval == 1 / 2) then
+      config.multiple_chord_interval = 1 / 2
     end
     ImGui.SameLine(ctx)
-    if ImGui.RadioButton(ctx, "1 bar", config.multiple_interval == 1) then
-      config.multiple_interval = 1
+    if ImGui.RadioButton(ctx, "1 bar", config.multiple_chord_interval == 1) then
+      config.multiple_chord_interval = 1
     end
     ImGui.SameLine(ctx)
-    if ImGui.RadioButton(ctx, "2 bars", config.multiple_interval == 2) then
-      config.multiple_interval = 2
+    if ImGui.RadioButton(ctx, "2 bars", config.multiple_chord_interval == 2) then
+      config.multiple_chord_interval = 2
     end
     ImGui.SameLine(ctx)
-    if ImGui.RadioButton(ctx, "4 bars", config.multiple_interval == 4) then
-      config.multiple_interval = 4
+    if ImGui.RadioButton(ctx, "4 bars", config.multiple_chord_interval == 4) then
+      config.multiple_chord_interval = 4
     end
     --compases   
     ImGui.EndDisabled(ctx)

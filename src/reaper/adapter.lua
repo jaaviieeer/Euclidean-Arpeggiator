@@ -11,7 +11,7 @@ function M.read_pitches_from_take(take)
     return pitches
 end
 
-function M.read_pitches_from_active_window(take, startppq, endppq)
+function M.read_pitches_from_window(take, startppq, endppq)
     local _, noteCount = reaper.MIDI_CountEvts(take)
     -- take notes pitches as it is the info we need
     local pitches = {}
@@ -24,7 +24,7 @@ function M.read_pitches_from_active_window(take, startppq, endppq)
     return pitches
 end
 
-function M.clear_pitches_from_take(take)
+function M.clear_notes_from_take(take)
     local _, noteCount = reaper.MIDI_CountEvts(take)
     for i = noteCount - 1, 0, -1 do
         reaper.MIDI_DeleteNote(take, i)
