@@ -30,23 +30,22 @@ function M.apply(config)
     if not config.multiple_chords_enabled then
         local pitches = reaperInteraction.read_pitches_from_take(take)
         events, totalPPQNeeded = generator.build_events(pitches, config, timing.ppqPerQN,
-        { bjor = bjor, pitch = pitch, time = time })
+            { bjor = bjor, pitch = pitch, time = time })
     else
-        local chords = {}
-        local currentPPQ = timing.itemStartPPQ
-        local intervalPPQ  = time.step_length_ppq(timing.ppqPerQN, config.multiple_chord_interval)
-        while currentPPQ <timing.itemEndPPQ do
+        local chords      = {}
+        local currentPPQ  = timing.itemStartPPQ
+        local intervalPPQ = time.step_length_ppq(timing.ppqPerQN, config.multiple_chord_interval)
+        while currentPPQ < timing.itemEndPPQ do
             local pitchesInWindow = reaperInteraction.read_pitches_from_window(take, currentPPQ, currentPPQ + intervalPPQ)
-            if not #pitchesInWindow == 0 then
-                currentPPQ = currentPPQ + intervalPPQ
+            if #pitchesInWindow > 0 then
                 table.insert(chords, pitchesInWindow)
             end
             currentPPQ = currentPPQ + intervalPPQ
         end
         events, totalPPQNeeded = generator.build_events_from_chord_sequence(chords, config, timing.ppqPerQN,
-        { bjor = bjor, pitch = pitch, time = time })
+            { bjor = bjor, pitch = pitch, time = time })
     end
-    
+
     reaperInteraction.clear_notes_from_take(take)
     reaperInteraction.set_item_length_for_ppq(timing, take, totalPPQNeeded)
     reaperInteraction.insert_events(take, timing, events)

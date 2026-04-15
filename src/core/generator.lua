@@ -10,7 +10,7 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
     local cycles = tonumber(config.cycles) or 0
     local cycle_length = tonumber(config.cycle_length) or steps
     local gate = tonumber(config.gate) or 1
-    local note_fraction = tonumber(config.note_fraction) or (1/4)
+    local note_fraction = tonumber(config.note_fraction) or (1 / 4)
     local order = tonumber(config.order) or 1
     local octave_steps = tonumber(config.octave_steps) or 0
     local octave_pulses = tonumber(config.octave_pulses) or 0
@@ -64,12 +64,12 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
             noteIndex = (noteIndex % #ordered) + 1
         end
         cycle_count = cycle_count + 1
-            if cycle_count >= cycle_length then
-                cycle_count = 0
-                if config.cycling_enabled then
-                    ordered = pitch.cycle_notes(ordered)
-                end
+        if cycle_count >= cycle_length then
+            cycle_count = 0
+            if config.cycling_enabled then
+                ordered = pitch.cycle_notes(ordered)
             end
+        end
     end
 
     local totalPPQNeeded = totalSteps * stepPPQ
@@ -86,7 +86,7 @@ function M.build_events_from_chord_sequence(pitches, config, ppqPerQN, dependenc
     local cycles = tonumber(config.cycles) or 0
     local cycle_length = tonumber(config.cycle_length) or steps
     local gate = tonumber(config.gate) or 1
-    local note_fraction = tonumber(config.note_fraction) or (1/4)
+    local note_fraction = tonumber(config.note_fraction) or (1 / 4)
     local order = tonumber(config.order) or 1
     local octave_steps = tonumber(config.octave_steps) or 0
     local octave_pulses = tonumber(config.octave_pulses) or 0
@@ -106,7 +106,6 @@ function M.build_events_from_chord_sequence(pitches, config, ppqPerQN, dependenc
     if jump_steps > 0 and jump_pulses > 0 then
         jump_pattern = bjor.bjorklund(jump_steps, jump_pulses)
     end
-
     local ordered = {}
     for i = 1, #pitches do
         local chord = pitches[i]
@@ -117,11 +116,14 @@ function M.build_events_from_chord_sequence(pitches, config, ppqPerQN, dependenc
     local totalSteps = cycle_length * cycles
     local events = {}
     local cycle_count = 0
+    local cycle_index = 0
 
     for step = 0, totalSteps - 1 do
         local patternStep = (step % cycle_length) + 1
+        local chord_index = (cycle_index % #ordered) + 1
+        local currentChord = ordered[chord_index]
         if pattern[patternStep] == 1 then
-            local p = ordered[noteIndex]
+            local p = currentChord[noteIndex]
 
             if octave_pattern then
                 local octStep = (step % octave_steps) + 1
@@ -140,17 +142,19 @@ function M.build_events_from_chord_sequence(pitches, config, ppqPerQN, dependenc
             }
             if jump_pattern then
                 local jumpStep = (step % jump_steps) + 1
-                if jump_pattern[jumpStep] == 1 then noteIndex = (noteIndex % #ordered) + 1 end
+                if jump_pattern[jumpStep] == 1 then noteIndex = (noteIndex % #currentChord) + 1 end
             end
-            noteIndex = (noteIndex % #ordered) + 1
+            noteIndex = (noteIndex % #currentChord) + 1
         end
         cycle_count = cycle_count + 1
-            if cycle_count >= cycle_length then
-                cycle_count = 0
-                if config.cycling_enabled then
-                    ordered = pitch.cycle_notes(ordered)
-                end
+        if cycle_count >= cycle_length then
+            cycle_count = 0
+            cycle_index = cycle_index + 1
+            noteIndex = 1
+            if config.cycling_enabled then
+                ordered[chord_index] = pitch.cycle_notes(currentChord)
             end
+        end
     end
 
     local totalPPQNeeded = totalSteps * stepPPQ
