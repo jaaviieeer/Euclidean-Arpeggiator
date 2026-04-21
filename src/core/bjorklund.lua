@@ -54,4 +54,10 @@ function M.bjorklund(steps, pulses)
     return pattern
 end
 
+function M.rotate_pattern(pattern)
+    local first = table.remove(pattern, 1)
+    table.insert(pattern, first)
+    return pattern
+end
+
 return M

@@ -69,6 +69,9 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
             if config.cycling_enabled then
                 ordered = pitch.cycle_notes(ordered)
             end
+            if config.pattern_rotation then
+                pattern = bjor.rotate_pattern(pattern)
+            end
         end
     end
 

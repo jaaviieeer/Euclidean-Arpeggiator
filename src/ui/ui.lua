@@ -22,6 +22,7 @@ local config = {
   cycling_enabled = false,
   multiple_chords_enabled = false,
   multiple_chord_interval = 1, --interval for cycling through chords
+  pattern_rotation = false, --rotation of the pattern
 }
 
 local pattern = bj.bjorklund(config.steps, config.pulses)
@@ -61,6 +62,8 @@ local function loop()
         config.pulses = config.steps
       end
     end
+    _, config.pattern_rotation = ImGui.Checkbox(ctx, "Enable Pattern Rotation", config.pattern_rotation or false)
+    ImGui.Text(ctx, "If enabled, the pattern will rotate (one position to the left) every cycle, creating a more dynamic rhythm")
     pattern = bj.bjorklund(config.steps, config.pulses)
     ImGui.Text(ctx, visualize_pattern(pattern))
     ImGui.Separator(ctx)                   --DENSITY OF PULSES
@@ -275,7 +278,7 @@ local function loop()
     if ImGui.RadioButton(ctx, "4 bars", config.multiple_chord_interval == 4) then
       config.multiple_chord_interval = 4
     end
-    --compases   
+    --compases
     ImGui.EndDisabled(ctx)
     ImGui.Separator(ctx)
     if ImGui.Button(ctx, "Generate") then
