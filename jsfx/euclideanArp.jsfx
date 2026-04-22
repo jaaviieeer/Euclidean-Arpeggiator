@@ -31,6 +31,18 @@ held_count = 0;//notas activas
 held_dirty = 1;//flag para indicar que hace falta regenerar
 arp_note_idx = 0;
 active_pitch = -1;
+sample_counter = 0; //contador hasta el sig step
+step_samples = 0; //duracion de un step en muestras
+step_pos = 0; //posición actual en el step
+current_step = 0; //paso actual
+note_off_countdown = -1;
+active_pitch = -1; //nota sonando
+active_vel = 100;
+play_idx = 0; //pos dentro del acorde
+ord_count = 0; //cuantas notas en el acorde ordenado
+note_length_samples = 0;
+last_vel = 100;
+
 i = 0;
 loop(MAX_STEPS,
   pat[i] = 0;
@@ -58,42 +70,17 @@ loop(MAX_ORD,
   i += 1;
 );
 
-function bj_build(out_arr, level) local(i) (
-  level == 0 ? (
-    out_arr[pattern_len] = 0;
-    pattern_len += 1;
-  ) :
-  level == -1 ? (
-    out_arr[pattern_len] = 1;
-    pattern_len += 1;
-  ) :
-  (
-    i = 0;
-    loop(counts[level],
-      bj_build(out_arr, level - 1);
-      i += 1;
-    );
-
-    remainders[level] != 0 ? (
-      bj_build(out_arr, level - 2);
-    );
-  );
-);
-
-function bjorklund_pattern(out_arr, steps_in, pulses_in) local(divisor, level, i) (
-  // normalización
+function bjorklund_pattern(out_arr, steps_in, pulses_in) local(i, prev, curr) (
   steps_in < 1 ? steps_in = 1;
   pulses_in < 0 ? pulses_in = 0;
   pulses_in > steps_in ? pulses_in = steps_in;
 
-  // limpiar array de salida
   i = 0;
   loop(MAX_STEPS,
     out_arr[i] = 0;
     i += 1;
   );
 
-  // casos triviales
   pulses_in == 0 ? (
     i = 0;
     loop(steps_in,
@@ -109,32 +96,63 @@ function bjorklund_pattern(out_arr, steps_in, pulses_in) local(divisor, level, i
     );
   ) :
   (
-    // reset arrays auxiliares
     i = 0;
-    loop(MAX_STEPS + 2,
-      counts[i] = 0;
-      remainders[i] = 0;
+    prev = -1;
+    loop(steps_in,
+      curr = floor((i * pulses_in) / steps_in);
+      out_arr[i] = (curr != prev) ? 1 : 0;
+      prev = curr;
       i += 1;
     );
+  );
+);
 
-    remainders[1] = pulses_in;
+function rebuild_ordered_notes() local(i, j, tmp, n) (
+  // limpiar arrays
+  i = 0;
+  loop(MAX_ORD,
+    ord[i] = -1;
+    ord2[i] = -1;
+    i += 1;
+  );
 
-    divisor = steps_in - pulses_in;
-    level = 1;
-
-    while(
-      counts[level] = floor(divisor / remainders[level]);
-      remainders[level + 1] = divisor % remainders[level];
-      divisor = remainders[level];
-      level += 1;
-
-      remainders[level] > 1;
+  // copiar notas válidas desde held a ord
+  n = 0;
+  i = 0;
+  loop(MAX_HELD,
+    held[i] >= 0 ? (
+      ord[n] = held[i];
+      n += 1;
     );
+    i += 1;
+  );
 
-    counts[level] = divisor;
+  ord_count = n;
 
-    pattern_len = 0;
-    bj_build(out_arr, level);
+  // ordenar ascendente (bubble sort simple)
+  i = 0;
+  loop(ord_count,
+    j = 0;
+    loop(ord_count - 1,
+      ord[j] > ord[j+1] ? (
+        tmp = ord[j];
+        ord[j] = ord[j+1];
+        ord[j+1] = tmp;
+      );
+      j += 1;
+    );
+    i += 1;
+  );
+);
+
+function next_note_up() local(n) (
+  ord_count <= 0 ? (
+    -1;
+  ) : (
+    n = ord[play_idx];
+    play_idx += 1;
+    play_idx >= ord_count ? play_idx = 0;
+    n;
   );
 );
 
@@ -219,4 +237,76 @@ while (
       midisend(ts, msg1, msg23);
     );
   );
+);
+
+//cambio de notas o soltada o cambio de parametros
+held_dirty ? (
+  rebuild_ordered_notes();
+  held_dirty = 0;
+  play_idx = 0;
+);
+
+//calculo temporal
+step_samples = (240 / tempo) * sync * srate;
+step_samples < 1 ? step_samples = 1;
+
+//reloj
+run && ord_count > 0 ? (
+  sample_counter += samplesblock;
+
+  while(sample_counter >= step_samples) (
+  sample_counter -= step_samples;
+
+  // avanzar step
+  current_step += 1;
+  current_step >= steps ? current_step = 0;
+
+  // si en este step hay pulso, tocar nota
+  pat[current_step] == 1 ? (
+    
+    // apagar nota anterior si seguía activa
+    active_pitch >= 0 ? (
+      midisend(0, 8*16, active_pitch | (0 << 8));
+      active_pitch = -1;
+      note_off_countdown = -1;
+    );
+
+    // elegir siguiente nota
+    next_pitch = next_note_up();
+
+    next_pitch >= 0 ? (
+      active_pitch = next_pitch;
+      active_vel = last_vel > 0 ? last_vel : 100;
+
+      // enviar note on
+      midisend(0, 9*16, active_pitch | (active_vel << 8));
+
+      // calcular duración
+      note_length_samples = step_samples * notelen * gate;
+      note_length_samples < 1 ? note_length_samples = 1;
+
+      note_off_countdown = note_length_samples;
+    );
+  );
+);
+) : (
+  sample_counter = 0;
+  current_step = 0;
+);
+
+active_pitch >= 0 && note_off_countdown >= 0 ? (
+  note_off_countdown -= samplesblock;
+
+  note_off_countdown <= 0 ? (
+    midisend(0, 8*16, active_pitch | (0 << 8));
+    active_pitch = -1;
+    note_off_countdown = -1;
+  );
+);
+
+ord_count <= 0 && active_pitch >= 0 ? (
+  midisend(0, 8*16, active_pitch | (0 << 8));
+  active_pitch = -1;
+  note_off_countdown = -1;
+  play_idx = 0;
 );
