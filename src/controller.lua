@@ -6,7 +6,7 @@ local bjor = dofile(script_path .. "./core/bjorklund.lua")
 local pitch = dofile(script_path .. "./core/pitch.lua")
 local time = dofile(script_path .. "./core/time.lua")
 local generator = dofile(script_path .. "./core/generator.lua")
-local reaperInteraction = dofile(script_path .. "./reaper/adapter.lua")
+local reaperInteraction = dofile(script_path .. "./adapter/offlineAdapter.lua")
 
 function M.apply(config)
     -- we take the selected item
