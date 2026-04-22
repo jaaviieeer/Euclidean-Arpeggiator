@@ -22,7 +22,9 @@ local config = {
   cycling_enabled = false,
   multiple_chords_enabled = false,
   multiple_chord_interval = 1, --interval for cycling through chords
-  pattern_rotation = false, --rotation of the pattern
+  pattern_rotation = false,    --rotation of the pattern
+  mode =
+  "offline"                    --offline or live, if live the arpeggiator will run in real time, if offline it will generate MIDI items
 }
 
 local pattern = bj.bjorklund(config.steps, config.pulses)
@@ -66,7 +68,8 @@ local function loop()
       end
     end
     _, config.pattern_rotation = ImGui.Checkbox(ctx, "Enable Pattern Rotation", config.pattern_rotation or false)
-    ImGui.Text(ctx, "If enabled, the pattern will rotate (one position to the left) every cycle, creating a more dynamic rhythm")
+    ImGui.Text(ctx,
+      "If enabled, the pattern will rotate (one position to the left) every cycle, creating a more dynamic rhythm")
     pattern = bj.bjorklund(config.steps, config.pulses)
     ImGui.Text(ctx, visualize_pattern(pattern))
     ImGui.Separator(ctx)                   --DENSITY OF PULSES
@@ -284,8 +287,21 @@ local function loop()
     --compases
     ImGui.EndDisabled(ctx)
     ImGui.Separator(ctx)
-    if ImGui.Button(ctx, "Generate") then
-      local ok, msg = controller.apply(config)
+    if ImGui.RadioButton(ctx, "Offline Mode", config.mode == "offline") then
+      config.mode = "offline"
+    end
+    ImGui.SameLine(ctx)
+    if ImGui.RadioButton(ctx, "Live Mode", config.mode == "live") then
+      config.mode = "live"
+    end
+    if config.mode == "live" then
+      if ImGui.Button(ctx, "Connect") then
+        local ok, msg = controller.apply(config)
+      end
+    else
+      if ImGui.Button(ctx, "Generate") then
+        local ok, msg = controller.apply(config)
+      end
     end
     ImGui.End(ctx)
   end
