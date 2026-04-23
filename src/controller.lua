@@ -12,7 +12,12 @@ local jsfxInteraction = dofile(script_path .. "./adapter/liveAdapter.lua")
 
 function M.apply(config)
     if config.mode == "live" then
-        return M.runLive(config)
+        local track, err = jsfxInteraction.get_track()
+        if not track then
+            reaper.ShowConsoleMsg("Error getting track: " .. err)
+            return false, err
+        end
+        return M.runLive(track, config)
     else
         -- we take the selected item
         local item = reaper.GetSelectedMediaItem(0, 0)
@@ -31,8 +36,8 @@ function M.apply(config)
     end
 end
 
-function M.runLive(config)
-    local ok, msg = jsfxInteraction.apply(config, { bjor = bjor, pitch = pitch, time = time })
+function M.runLive(track, config)
+    local ok, msg = jsfxInteraction.apply(track, config, { bjor = bjor, pitch = pitch, time = time })
     if not ok then
         reaper.ShowConsoleMsg("Error applying live mode: " .. msg)
     end
