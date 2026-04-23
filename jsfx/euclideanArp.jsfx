@@ -165,19 +165,18 @@ steps=slider1|0;
 pulses=slider2|0; 
 pulses > steps ? pulses = steps;
 
-gate=slider3;
+gate=slider5;
 gate<0?gate=0:gate>1?gate=1;
 
-sync=slider4;
-notelen=slider5|0;
-noteorder=slider6|0;
+sync=slider6;
+noteorder=slider3|0;
 
-octaveEnable=slider7|0;
-octaveSteps=slider8|0;
-octavePulses=slider9|0;
+octaveEnable=slider8|0;
+octaveSteps=slider9|0;
+octavePulses=slider10|0;
 octavePulses > octaveSteps ? octavePulses = octaveSteps;
 
-run=slider10|0;
+run=1;
 
 bjorklund_pattern(pat, steps, pulses);
 
@@ -286,7 +285,7 @@ run && ord_count > 0 ? (
       midisend(0, 9*16, active_pitch | (active_vel << 8));
 
       // calcular duración
-      note_length_samples = step_samples * notelen * gate;
+      note_length_samples = step_samples * gate;
       note_length_samples < 1 ? note_length_samples = 1;
 
       note_off_countdown = note_length_samples;
