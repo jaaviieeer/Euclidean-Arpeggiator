@@ -169,7 +169,7 @@ gate=slider5;
 gate<0?gate=0:gate>1?gate=1;
 
 sync=slider6;
-noteorder=slider3|0;
+noteorder=slider4|0;
 
 octaveEnable=slider8|0;
 octaveSteps=slider9|0;
@@ -280,7 +280,8 @@ run && ord_count > 0 ? (
     next_pitch >= 0 ? (
       active_pitch = next_pitch;
       active_vel = last_vel > 0 ? last_vel : 100;
-
+      oct_idx = current_step % octaveSteps;
+      octaveEnable && octaveSteps > 0 && octpat[oct_idx] == 1 ? active_pitch += 12 : 0;
       // enviar note on
       midisend(0, 9*16, active_pitch | (active_vel << 8));
 
