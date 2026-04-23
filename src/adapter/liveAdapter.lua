@@ -11,6 +11,10 @@ function M.get_track()
     return track
 end
 
+function set_param(track, fx_index, param_index, value) 
+    reaper.TrackFX_SetParam(track, fx_index, param_index, value)
+end
+
 function M.apply(track, config, dependencies)
     local steps = tonumber(config.steps) or 0
     local pulses = tonumber(config.pulses) or 0
@@ -29,6 +33,11 @@ function M.apply(track, config, dependencies)
             return nil, "Could not insert JSFX: " .. JSFX_NAME
         end
     end
+
+    set_param(track, fx_index, 0, steps)
+    set_param(track, fx_index, 1, pulses)
+
+    return true
 end
 
 return M
