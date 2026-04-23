@@ -166,12 +166,12 @@ pulses=slider2|0;
 pulses > steps ? pulses = steps;
 
 gate=slider5;
-gate<0?gate=0:gate>1?gate=1;
+gate<0?gate=0:gate>5?gate=5;
 
 sync=slider6;
 noteorder=slider4|0;
 
-octaveEnable=slider8|0;
+octaveEnable=slider8;
 octaveSteps=slider9|0;
 octavePulses=slider10|0;
 octavePulses > octaveSteps ? octavePulses = octaveSteps;
@@ -180,7 +180,7 @@ run=1;
 
 bjorklund_pattern(pat, steps, pulses);
 
-octaveEnable && octavePulses > 0 ? (
+octavePulses > 0 ? (
   bjorklund_pattern(octpat, octaveSteps, octavePulses);
 ) : (
   i = 0;
@@ -281,7 +281,7 @@ run && ord_count > 0 ? (
       active_pitch = next_pitch;
       active_vel = last_vel > 0 ? last_vel : 100;
       oct_idx = current_step % octaveSteps;
-      octaveEnable && octaveSteps > 0 && octpat[oct_idx] == 1 ? active_pitch += 12 : 0;
+      octaveSteps > 0 && octpat[oct_idx] == 1 ? active_pitch += 12 : 0;
       // enviar note on
       midisend(0, 9*16, active_pitch | (active_vel << 8));
 
