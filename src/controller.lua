@@ -19,6 +19,11 @@ function M.apply(config)
         end
         return M.runLive(track, config)
     else
+        local track, err = jsfxInteraction.get_track()
+        if not track then
+            reaper.ShowConsoleMsg("Error getting track: " .. err)
+            return false, err
+        end
         -- we take the selected item
         local item = reaper.GetSelectedMediaItem(0, 0)
         if not item then
@@ -31,7 +36,7 @@ function M.apply(config)
             reaper.ShowConsoleMsg("The selected item does not contain MIDI")
             return
         end
-
+        jsfxInteraction.disable_live_fx(track)
         return M.runOffline(config, take)
     end
 end

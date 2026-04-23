@@ -10,7 +10,7 @@ slider7:0<0,1,1>Note cycling enabled
 slider8:0<0,1,1>Octave pattern enabled
 slider9:4<1,128,1>Oct Steps
 slider10:1<0,128,1>Oct Pulses
-slider11:0<0,1,1>Jumping pattern enabled
+slider11:0<0,1,1>Jumping enabled
 slider12:4<1,128,1>Jumping Steps
 slider13:1<0,128,1>Jumping Pulses
 slider14:1<0,1,1>Run (0 off, 1 on)
