@@ -96,6 +96,12 @@ function M.disable_live_fx(track)
     end
 end
 
+local function bool01(v)
+    if v == true then return 1 end
+    if v == false or v == nil then return 0 end
+    return tonumber(v) or 0
+end
+
 function M.apply(track, config, dependencies)
     local ok_file, file_msg = ensure_jsfx_file()
     if not ok_file then
@@ -104,15 +110,15 @@ function M.apply(track, config, dependencies)
 
     local steps           = tonumber(config.steps) or 0
     local pulses          = tonumber(config.pulses) or 0
-    local pattern_cycling = tonumber(config.pattern_rotation) or 0
+    local pattern_cycling = bool01(config.pattern_rotation) or 0
     local mode            = tonumber(config.order) or 1
     local gate            = tonumber(config.gate) or 1
     local note_fraction   = tonumber(config.note_fraction) or (1 / 4)
-    local note_cycling    = tonumber(config.cycling_enabled) or 0
-    local octave_enabled  = tonumber(config.octave_enabled) or 0
+    local note_cycling    = bool01(config.cycling_enabled) or 0
+    local octave_enabled  = bool01(config.octave_enabled) or 0
     local octave_steps    = tonumber(config.octave_steps) or 0
     local octave_pulses   = tonumber(config.octave_pulses) or 0
-    local jumping_pattern = tonumber(config.jump_enabled) or 0
+    local jumping_pattern = bool01(config.jump_enabled) or 0
     local jump_steps      = tonumber(config.jump_steps) or 0
     local jump_pulses     = tonumber(config.jump_pulses) or 0
     local fx_count        = reaper.TrackFX_GetCount(track)

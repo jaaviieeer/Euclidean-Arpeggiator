@@ -160,11 +160,24 @@ function next_note_up() local(n) (
   );
 );
 
+function rotate_pattern(arr, pattern_len) local (i, tmp)(
+  pattern_len > 1 ? (
+    tmp = arr[0];
+    i=1;
+    loop(pattern_len - 1,
+      arr[i-1] = arr[i];
+      i+=1;
+    );
+    arr[pattern_len - 1]=tmp;
+  );
+);
+
 @slider 
 steps=slider1|0;
 pulses=slider2|0; 
+pattern_rotation=slider3;
 pulses > steps ? pulses = steps;
-
+pattern_len = steps;
 gate=slider5;
 gate<0?gate=0:gate>5?gate=5;
 
@@ -262,7 +275,12 @@ run && ord_count > 0 ? (
 
   // avanzar step
   current_step += 1;
-  current_step >= steps ? current_step = 0;
+  current_step >= steps ? (
+    pattern_rotation ? (
+      rotate_pattern(pat, pattern_len);
+    );
+    current_step = 0;
+  );
 
   // si en este step hay pulso, tocar nota
   pat[current_step] == 1 ? (
