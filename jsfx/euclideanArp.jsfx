@@ -133,19 +133,37 @@ function rebuild_ordered_notes() local(i, j, tmp, n) (
 
   ord_count = n;
 
-  // ordenar ascendente (bubble sort simple)
-  i = 0;
-  loop(ord_count,
-    j = 0;
-    loop(ord_count - 1,
-      ord[j] > ord[j+1] ? (
-        tmp = ord[j];
-        ord[j] = ord[j+1];
-        ord[j+1] = tmp;
+  noteorder = 1 ? (
+    // ordenar ascendente (bubble sort simple)
+    i = 0;
+    loop(ord_count,
+      j = 0;
+      loop(ord_count - 1,
+        ord[j] > ord[j+1] ? (
+          tmp = ord[j];
+          ord[j] = ord[j+1];
+          ord[j+1] = tmp;
+        );
+        j += 1;
       );
-      j += 1;
+      i += 1;
     );
-    i += 1;
+  );
+  noteorder = 2 ? (
+    // ordenar descendente (bubble sort simple)
+    i = 0;
+    loop(ord_count,
+      j = 0;
+      loop(ord_count - 1,
+        ord[j] < ord[j+1] ? (
+          tmp = ord[j];
+          ord[j] = ord[j+1];
+          ord[j+1] = tmp;
+        );
+        j += 1;
+      );
+      i += 1;
+    );
   );
 );
 
