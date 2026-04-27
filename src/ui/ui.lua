@@ -45,6 +45,36 @@ local function visualize_pattern(pattern)
   return table.concat(parts, " ")
 end
 
+local function draw_pattern_circle(pattern, steps, size)
+  local draw_list = ImGui.GetWindowDrawList(ctx)
+
+  local cursor_x, cursor_y = ImGui.GetCursorScreenPos(ctx)
+
+  local radius = size * 0.4
+  local cx = cursor_x + size * 0.5
+  local cy = cursor_y + size * 0.5
+
+  -- círculo base
+  ImGui.DrawList_AddCircle(draw_list, cx, cy, radius, 0x444444FF, 32, 2)
+
+  for i = 1, steps do
+    local angle = ((i - 1) / steps) * 2 * math.pi - math.pi / 2
+
+    local x = cx + math.cos(angle) * radius
+    local y = cy + math.sin(angle) * radius
+
+    local active = pattern[i] == 1
+
+    local color = active and 0x00FFFFFF or 0x555555FF
+    local r = active and 6 or 4
+
+    ImGui.DrawList_AddCircleFilled(draw_list, x, y, r, color)
+  end
+
+  -- reservar espacio en layout
+  ImGui.Dummy(ctx, size, size)
+end
+
 local function loop()
   ImGui.SetNextWindowSize(ctx, 720, 780, ImGui.Cond_FirstUseEver)
   local visible, open = ImGui.Begin(ctx, 'Euclidean Arpeggiator', true)
@@ -65,7 +95,7 @@ local function loop()
     if ImGui.RadioButton(ctx, "Live", config.mode == "live") then
       config.mode = "live"
     end
-    ImGui.SetCursorPosX(ctx,200)
+    ImGui.SetCursorPosX(ctx, 200)
     ImGui.TextDisabled(ctx, config.mode == "live"
       and "Live mode controls the JSFX engine on the selected track."
       or "Offline mode writes the generated arpeggio into the selected MIDI item.")
@@ -103,8 +133,8 @@ local function loop()
         ImGui.TableNextColumn(ctx)
         pattern = bj.bjorklund(config.steps, config.pulses)
         ImGui.TextDisabled(ctx, "Pattern")
-        ImGui.Text(ctx, visualize_pattern(pattern)) --DENSITY OF PULSES
-        ImGui.Text(ctx, string.format("Density: %.2f%%", (config.pulses / config.steps) * 100))
+        draw_pattern_circle(pattern, config.steps, 180) 
+        ImGui.Text(ctx, string.format("Density: %.2f%%", (config.pulses / config.steps) * 100)) --DENSITY OF PULSES
         ImGui.EndTable(ctx)
       end
     end
@@ -271,7 +301,7 @@ local function loop()
         end
         ImGui.TableNextColumn(ctx)
         octave_pattern = bj.bjorklund(config.octave_steps, config.octave_pulses)
-        ImGui.Text(ctx, visualize_pattern(octave_pattern))
+        draw_pattern_circle(octave_pattern, config.octave_steps, 180) 
         ImGui.EndDisabled(ctx)
         ImGui.EndTable(ctx)
       end
@@ -307,12 +337,12 @@ local function loop()
         end
         ImGui.TableNextColumn(ctx)
         jump_pattern = bj.bjorklund(config.jump_steps, config.jump_pulses)
-        ImGui.Text(ctx, visualize_pattern(jump_pattern))
+        draw_pattern_circle(jump_pattern, config.jump_steps, 180) 
         ImGui.EndDisabled(ctx)
         ImGui.EndTable(ctx)
       end
     end
-    if ImGui.CollapsingHeader(ctx, "Ofline only options", ImGui.TreeNodeFlags_DefaultOpen) then
+    if ImGui.CollapsingHeader(ctx, "Offline only options", ImGui.TreeNodeFlags_DefaultOpen) then
       ImGui.Text(ctx, "Cycles")
       ImGui.SameLine(ctx, LABEL_WIDTH)
       ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
