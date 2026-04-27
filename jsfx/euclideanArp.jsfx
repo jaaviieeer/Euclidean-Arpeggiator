@@ -47,6 +47,7 @@ play_idx = 0; //pos dentro del acorde
 ord_count = 0; //cuantas notas en el acorde ordenado
 note_length_samples = 0;
 last_vel = 100;
+pingpong_dir = 1;
 
 i = 0;
 loop(MAX_STEPS,
@@ -135,8 +136,10 @@ function rebuild_ordered_notes() local(i, j, tmp, n) (
 
   ord_count = n;
 
-  noteorder == 1 ? (
-    // ordenar ascendente (bubble sort simple)
+  //orden 'as played' no hace falta tocarlo
+
+  // ordenar ascendente (bubble sort simple)
+  noteorder != 0 ? (
     i = 0;
     loop(ord_count,
       j = 0;
@@ -167,47 +170,40 @@ function rebuild_ordered_notes() local(i, j, tmp, n) (
       i += 1;
     );
   );
-  noteorder == 3 ? (
-    // ordenar pingpong
-    i = 0;
-    loop(ord_count,
-      j = 0;
-      loop(ord_count - 1,
-        ord[j] < ord[j+1] ? (
-          tmp = ord[j];
-          ord[j] = ord[j+1];
-          ord[j+1] = tmp;
-        );
-        j += 1;
-      );
-      i += 1;
-    );
-  );
-  noteorder == 4 ? (
-    // random
-    i = 0;
-    loop(ord_count,
-      j = 0;
-      loop(ord_count - 1,
-        ord[j] < ord[j+1] ? (
-          tmp = ord[j];
-          ord[j] = ord[j+1];
-          ord[j+1] = tmp;
-        );
-        j += 1;
-      );
-      i += 1;
-    );
-  );
+  // el orden ping funciona al pedir nota con direccion de pedida
+  // el orden random se hace al pedir la nota
 );
 
-function next_note() local(n) (
+function next_note() local(n, idx) (
   ord_count <= 0 ? (
     -1;
   ) : (
-    n = ord[play_idx];
-    play_idx += 1;
-    play_idx >= ord_count ? play_idx = 0;
+    noteorder == 4 ? (
+      idx = floor(rand(ord_count));
+      n = ord[idx];
+    ) :
+    noteorder == 3 ? (
+      n = ord[play_idx];
+
+      ord_count > 1 ? (
+        play_idx += pingpong_dir;
+
+        play_idx >= ord_count ? (
+          play_idx = ord_count - 2;
+          pingpong_dir = -1;
+        );
+
+        play_idx < 0 ? (
+          play_idx = 1;
+          pingpong_dir = 1;
+        );
+      );
+    ) : (
+      n = ord[play_idx];
+      play_idx += 1;
+      play_idx >= ord_count ? play_idx = 0;
+    );
+
     n;
   );
 );
@@ -341,6 +337,7 @@ held_dirty ? (
   rebuild_ordered_notes();
   held_dirty = 0;
   play_idx = 0;
+  pingpong_dir = 1;
 );
 
 //calculo temporal
