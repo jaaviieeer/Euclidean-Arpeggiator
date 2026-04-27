@@ -9,7 +9,7 @@ local config = {
   steps = 15,
   pulses = 9,
   gate = 1,              --% of the step that uses a note
-  order = 1,             --1 up, 2 down, 3 ping pong, 4 random
+  order = 1,             --0 as played, 1 up, 2 down, 3 ping pong, 4 random
   note_fraction = 1 / 4, --1 whole, 1/2 half, 1/4 quarter, etc all fractions supported
   octave_steps = 0,      -- for the octave pattern
   octave_pulses = 0,     -- for the octave pattern
@@ -75,6 +75,10 @@ local function loop()
     ImGui.Separator(ctx)                   --DENSITY OF PULSES
     ImGui.Text(ctx, string.format("Density: %.2f%%", (config.pulses / config.steps) * 100))
     ImGui.SeparatorText(ctx, "Note order") --NOTE ORDER
+    if ImGui.RadioButton(ctx, "As played", config.order == 0) then
+      config.order = 0
+    end
+    ImGui.SameLine(ctx)
     if ImGui.RadioButton(ctx, "Ascending", config.order == 1) then
       config.order = 1
     end

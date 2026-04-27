@@ -3,7 +3,7 @@ desc: MIDI Euclidean Arpeggiator
 slider1:16<1,128,1>Steps
 slider2:9<0,128,1>Pulses
 slider3:0<0,1,1>Pattern rotation (0-1)
-slider4:1<1,4,1{Up,Down,PingPong,Random}>Mode
+slider4:1<0,4,1{As played, Up,Down,PingPong,Random}>Mode
 slider5:1<0.05,5,0.01>Gate
 slider6:0.25<0.01,1,0.01>Sync (whole=1)
 slider7:0<0,1,1>Note cycling enabled
@@ -23,7 +23,8 @@ out_pin:none
 MAX_STEPS = 128;
 pat = 0;
 octpat = pat + MAX_STEPS;
-counts = octpat + MAX_STEPS;
+jumpat = octpat + MAX_STEPS;
+counts = jumpat + MAX_STEPS;
 remainders = counts + MAX_STEPS + 2;
 pattern_len = 0;
 MAX_HELD = 16;
@@ -51,6 +52,7 @@ i = 0;
 loop(MAX_STEPS,
   pat[i] = 0;
   octpat[i] = 0;
+  jumpat[i] = 0;
   i += 1;
 );
 
@@ -133,7 +135,7 @@ function rebuild_ordered_notes() local(i, j, tmp, n) (
 
   ord_count = n;
 
-  noteorder = 1 ? (
+  noteorder == 1 ? (
     // ordenar ascendente (bubble sort simple)
     i = 0;
     loop(ord_count,
@@ -149,8 +151,40 @@ function rebuild_ordered_notes() local(i, j, tmp, n) (
       i += 1;
     );
   );
-  noteorder = 2 ? (
+  noteorder == 2 ? (
     // ordenar descendente (bubble sort simple)
+    i = 0;
+    loop(ord_count,
+      j = 0;
+      loop(ord_count - 1,
+        ord[j] < ord[j+1] ? (
+          tmp = ord[j];
+          ord[j] = ord[j+1];
+          ord[j+1] = tmp;
+        );
+        j += 1;
+      );
+      i += 1;
+    );
+  );
+  noteorder == 3 ? (
+    // ordenar pingpong
+    i = 0;
+    loop(ord_count,
+      j = 0;
+      loop(ord_count - 1,
+        ord[j] < ord[j+1] ? (
+          tmp = ord[j];
+          ord[j] = ord[j+1];
+          ord[j+1] = tmp;
+        );
+        j += 1;
+      );
+      i += 1;
+    );
+  );
+  noteorder == 4 ? (
+    // random
     i = 0;
     loop(ord_count,
       j = 0;
@@ -167,7 +201,7 @@ function rebuild_ordered_notes() local(i, j, tmp, n) (
   );
 );
 
-function next_note_up() local(n) (
+function next_note() local(n) (
   ord_count <= 0 ? (
     -1;
   ) : (
@@ -190,24 +224,43 @@ function rotate_pattern(arr, pattern_len) local (i, tmp)(
   );
 );
 
+function rotate_pitches(arr, ord_len) local (i, tmp)(
+  ord_len > 1 ? (
+    tmp = arr[0];
+    i=1;
+    loop(ord_len - 1,
+      arr[i-1] = arr[i];
+      i+=1;
+    );
+    arr[ord_len - 1]=tmp;
+  );
+);
+
 @slider 
 steps=slider1|0;
 pulses=slider2|0; 
 pattern_rotation=slider3;
 pulses > steps ? pulses = steps;
 pattern_len = steps;
+noteorder=slider4|0;
+held_dirty = 1;
 gate=slider5;
 gate<0?gate=0:gate>5?gate=5;
 
 sync=slider6;
-noteorder=slider4|0;
+note_cycling=slider7;
 
 octaveEnable=slider8;
 octaveSteps=slider9|0;
 octavePulses=slider10|0;
 octavePulses > octaveSteps ? octavePulses = octaveSteps;
 
-run=1;
+jumpingEnable=slider11;
+jumpingSteps=slider12|0;
+jumpingPulses=slider13|0;
+jumpingPulses > jumpingSteps ? jumpingPulses = jumpingSteps;
+
+run=slider14;
 
 bjorklund_pattern(pat, steps, pulses);
 
@@ -217,6 +270,16 @@ octavePulses > 0 ? (
   i = 0;
   loop(MAX_STEPS,
     octpat[i] = 0;
+    i += 1;
+  );
+);
+
+jumpingPulses > 0 ? (
+  bjorklund_pattern(jumpat, jumpingSteps, jumpingPulses);
+) : (
+  i = 0;
+  loop(MAX_STEPS,
+    jumpat[i] = 0;
     i += 1;
   );
 );
@@ -297,6 +360,9 @@ run && ord_count > 0 ? (
     pattern_rotation ? (
       rotate_pattern(pat, pattern_len);
     );
+    note_cycling ? (
+      rotate_pitches(ord, ord_count);
+    );
     current_step = 0;
   );
 
@@ -311,13 +377,15 @@ run && ord_count > 0 ? (
     );
 
     // elegir siguiente nota
-    next_pitch = next_note_up();
+    next_pitch = next_note();
 
     next_pitch >= 0 ? (
+      jump_idx = current_step % jumpingSteps;
+      jumpingSteps > 0 && jumpat[jump_idx] == 1 ? next_pitch = next_note();//jump pattern
       active_pitch = next_pitch;
       active_vel = last_vel > 0 ? last_vel : 100;
       oct_idx = current_step % octaveSteps;
-      octaveSteps > 0 && octpat[oct_idx] == 1 ? active_pitch += 12 : 0;
+      octaveSteps > 0 && octpat[oct_idx] == 1 ? active_pitch += 12 : 0;//octave pattern
       // enviar note on
       midisend(0, 9*16, active_pitch | (active_vel << 8));
 

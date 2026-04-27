@@ -111,7 +111,7 @@ function M.apply(track, config, dependencies)
     local steps           = tonumber(config.steps) or 0
     local pulses          = tonumber(config.pulses) or 0
     local pattern_cycling = bool01(config.pattern_rotation) or 0
-    local mode            = tonumber(config.order) or 1
+    local order            = tonumber(config.order) or 1
     local gate            = tonumber(config.gate) or 1
     local note_fraction   = tonumber(config.note_fraction) or (1 / 4)
     local note_cycling    = bool01(config.cycling_enabled) or 0
@@ -139,7 +139,7 @@ function M.apply(track, config, dependencies)
     set_param(track, fx_index, 0, steps)
     set_param(track, fx_index, 1, pulses)
     set_param(track, fx_index, 2, pattern_cycling)
-    set_param(track, fx_index, 3, mode)
+    set_param(track, fx_index, 3, order)
     set_param(track, fx_index, 4, gate)
     set_param(track, fx_index, 5, note_fraction)
     set_param(track, fx_index, 6, note_cycling)
@@ -149,6 +149,7 @@ function M.apply(track, config, dependencies)
     set_param(track, fx_index, 10, jumping_pattern)
     set_param(track, fx_index, 11, jump_steps)
     set_param(track, fx_index, 12, jump_pulses)
+    set_param(track, fx_index, 13, 1)
 
     return true
 end
