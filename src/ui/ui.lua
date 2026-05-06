@@ -66,6 +66,9 @@ local function draw_pattern_circle(pattern, steps, size)
     local active = pattern[i] == 1
 
     local color = active and 0x00FFFFFF or 0x555555FF
+    if i == 1 then
+      color = 0x000FFFFF
+    end
     local r = active and 6 or 4
 
     ImGui.DrawList_AddCircleFilled(draw_list, x, y, r, color)

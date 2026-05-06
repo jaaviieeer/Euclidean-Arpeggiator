@@ -364,7 +364,7 @@ run && ord_count > 0 ? (
   );
 
   // si en este step hay pulso, tocar nota
-  pat[current_step] == 1 ? (
+  pat[current_step - 1] == 1 ? (
     
     // apagar nota anterior si seguía activa
     active_pitch >= 0 ? (
@@ -377,11 +377,11 @@ run && ord_count > 0 ? (
     next_pitch = next_note();
 
     next_pitch >= 0 ? (
-      jump_idx = current_step % jumpingSteps;
+      jump_idx = (current_step - 1) % jumpingSteps;
       jumpingSteps > 0 && jumpat[jump_idx] == 1 ? next_pitch = next_note();//jump pattern
       active_pitch = next_pitch;
       active_vel = last_vel > 0 ? last_vel : 100;
-      oct_idx = current_step % octaveSteps;
+      oct_idx = (current_step - 1) % octaveSteps;
       octaveSteps > 0 && octpat[oct_idx] == 1 ? active_pitch += 12 : 0;//octave pattern
       // enviar note on
       midisend(0, 9*16, active_pitch | (active_vel << 8));
