@@ -51,7 +51,7 @@ local function draw_pattern_circle(pattern, steps, size)
   local cursor_x, cursor_y = ImGui.GetCursorScreenPos(ctx)
 
   local radius = size * 0.4
-  local cx = cursor_x + size * 0.5
+  local cx = cursor_x + size * 0.75
   local cy = cursor_y + size * 0.5
 
   -- círculo base
@@ -66,10 +66,11 @@ local function draw_pattern_circle(pattern, steps, size)
     local active = pattern[i] == 1
 
     local color = active and 0x00FFFFFF or 0x555555FF
-    if i == 1 then
-      color = 0x000FFFFF
-    end
     local r = active and 6 or 4
+
+    if i == 1 then
+      ImGui.DrawList_AddCircle(draw_list, x, y, 12, 0x000FFFFF, 32, 2)
+    end
 
     ImGui.DrawList_AddCircleFilled(draw_list, x, y, r, color)
   end
