@@ -118,9 +118,7 @@ local function loop()
           if config.pulses > config.steps then
             config.pulses = config.steps
           end
-          if config.cycle_length > config.steps then
-            config.cycle_length = config.steps
-          end
+          config.cycle_length = config.steps
         end
         ImGui.Text(ctx, "Pulses")
         ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
