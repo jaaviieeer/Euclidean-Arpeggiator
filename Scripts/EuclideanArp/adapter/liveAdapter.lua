@@ -1,77 +1,24 @@
 local M = {}
 
-local JSFX_FILE_NAME = "euclideanArp.jsfx"
 local JSFX_NAME = "JS: MIDI Euclidean Arpeggiator"
+local JSFX_MATCH_NAME = "MIDI Euclidean Arpeggiator"
 
-local script_path = debug.getinfo(1, "S").source:match("@?(.*[/\\])")
-local project = 0
-
-local function join_path(a, b)
-    local sep = package.config:sub(1, 1)
-    if a:sub(-1) == "/" or a:sub(-1) == "\\" then
-        return a .. b
-    end
-    return a .. sep .. b
-end
-
-local function get_resource_effects_dir()
-    local project_path = reaper.GetResourcePath()
-    return join_path(project_path, "Effects")
-end
-
-local function get_source_jsfx_path()
-    return join_path(script_path, "../../Effects/EuclideanArp" .. JSFX_FILE_NAME)
-end
-
-local function get_dest_jsfx_path()
-    local effects_dir = get_resource_effects_dir()
-    return join_path(effects_dir, JSFX_FILE_NAME)
-end
-
-local function ensure_directory(path)
-    reaper.RecursiveCreateDirectory(path, 0)
-end
-
-local function copy_file(src, dst)
-    local in_f = io.open(src, "rb")
-    if not in_f then
-        return false, "Could not open source JSFX: " .. tostring(src)
+local function ensure_jsfx(track)
+    local fx_index = M.find_jsfx(track)
+    if fx_index ~= nil then
+        return fx_index
     end
 
-    local data = in_f:read("*all")
-    in_f:close()
+    fx_index = reaper.TrackFX_AddByName(track, JSFX_NAME, false, -1000)
 
-    local out_f = io.open(dst, "wb")
-    if not out_f then
-        return false, "Could not open destination JSFX: " .. tostring(dst)
+    if fx_index < 0 then
+        return nil, "Could not insert JSFX: " .. JSFX_NAME
     end
 
-    out_f:write(data)
-    out_f:close()
-
-    return true
+    return fx_index
 end
 
-local function ensure_jsfx_file()
-    local effects_dir = get_resource_effects_dir()
-    ensure_directory(effects_dir)
 
-    local src = get_source_jsfx_path()
-    local dst = get_dest_jsfx_path()
-
-    local f = io.open(dst, "rb")
-    if f then
-        f:close()
-        return true, dst
-    end
-
-    local ok, err = copy_file(src, dst)
-    if not ok then
-        return false, err
-    end
-
-    return true, dst
-end
 
 function M.get_track()
     local track = reaper.GetSelectedTrack(0, 0)
@@ -103,9 +50,10 @@ local function bool01(v)
 end
 
 function M.apply(track, config, dependencies)
-    local ok_file, file_msg = ensure_jsfx_file()
-    if not ok_file then
-        return false, file_msg
+
+    local fx_index, fx_err = ensure_jsfx(track)
+    if fx_index == nil then
+        return false, fx_err
     end
 
     local steps           = tonumber(config.steps) or 0
