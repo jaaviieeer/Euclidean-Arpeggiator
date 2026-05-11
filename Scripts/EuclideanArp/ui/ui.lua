@@ -2,7 +2,7 @@ package.path = reaper.ImGui_GetBuiltinPath() .. '/?.lua'
 local ImGui = require 'imgui' '0.10'
 local ctx = ImGui.CreateContext('Euclidean Arp')
 local script_path = debug.getinfo(1, "S").source:match("@?(.*[/\\])")
-local controller = dofile(script_path .. "../controller.lua")
+local controller = dofile(script_path .. "../controller/controller.lua")
 local bj = dofile(script_path .. "../core/bjorklund.lua")
 
 local config = {

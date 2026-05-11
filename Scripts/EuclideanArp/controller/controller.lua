@@ -2,12 +2,12 @@ local M = {}
 
 local script_path = debug.getinfo(1, "S").source:match("@?(.*[/\\])")
 math.randomseed(math.floor(reaper.time_precise()))
-local bjor = dofile(script_path .. "./core/bjorklund.lua")
-local pitch = dofile(script_path .. "./core/pitch.lua")
-local time = dofile(script_path .. "./core/time.lua")
-local generator = dofile(script_path .. "./core/generator.lua")
-local reaperInteraction = dofile(script_path .. "./adapter/offlineAdapter.lua")
-local jsfxInteraction = dofile(script_path .. "./adapter/liveAdapter.lua")
+local bjor = dofile(script_path .. "../core/bjorklund.lua")
+local pitch = dofile(script_path .. "../core/pitch.lua")
+local time = dofile(script_path .. "../core/time.lua")
+local generator = dofile(script_path .. "../core/generator.lua")
+local reaperInteraction = dofile(script_path .. "../adapter/offlineAdapter.lua")
+local jsfxInteraction = dofile(script_path .. "../adapter/liveAdapter.lua")
 
 
 function M.apply(config)

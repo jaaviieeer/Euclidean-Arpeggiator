@@ -20,7 +20,7 @@ local function get_resource_effects_dir()
 end
 
 local function get_source_jsfx_path()
-    return join_path(script_path, "../../jsfx/" .. JSFX_FILE_NAME)
+    return join_path(script_path, "../../Effects/EuclideanArp" .. JSFX_FILE_NAME)
 end
 
 local function get_dest_jsfx_path()
