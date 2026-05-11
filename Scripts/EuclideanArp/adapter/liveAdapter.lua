@@ -3,8 +3,21 @@ local M = {}
 local JSFX_NAME = "JS: MIDI Euclidean Arpeggiator"
 local JSFX_MATCH_NAME = "MIDI Euclidean Arpeggiator"
 
+local function find_jsfx(track)
+    local fx_count = reaper.TrackFX_GetCount(track)
+
+    for i = 0, fx_count - 1 do
+        local retval, fx_name = reaper.TrackFX_GetFXName(track, i, "")
+        if retval and fx_name:find(JSFX_MATCH_NAME, 1, true) then
+            return i
+        end
+    end
+
+    return nil
+end
+
 local function ensure_jsfx(track)
-    local fx_index = M.find_jsfx(track)
+    local fx_index = find_jsfx(track)
     if fx_index ~= nil then
         return fx_index
     end
@@ -17,8 +30,6 @@ local function ensure_jsfx(track)
 
     return fx_index
 end
-
-
 
 function M.get_track()
     local track = reaper.GetSelectedTrack(0, 0)
@@ -69,20 +80,6 @@ function M.apply(track, config, dependencies)
     local jumping_pattern = bool01(config.jump_enabled) or 0
     local jump_steps      = tonumber(config.jump_steps) or 0
     local jump_pulses     = tonumber(config.jump_pulses) or 0
-    local fx_count        = reaper.TrackFX_GetCount(track)
-    local fx_index        = -1
-    for i = 0, fx_count - 1 do
-        local retval, fx = reaper.TrackFX_GetFXName(track, i)
-        if retval and fx:find(JSFX_NAME, 1, true) then
-            fx_index = i
-        end
-    end
-    if fx_index == -1 then
-        fx_index = reaper.TrackFX_AddByName(track, JSFX_NAME, false, -1000)
-        if fx_index < 0 then
-            return nil, "Could not insert JSFX: " .. JSFX_NAME
-        end
-    end
 
     set_param(track, fx_index, 0, steps)
     set_param(track, fx_index, 1, pulses)
