@@ -1,23 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <index version="1" name="Euclidean Arpeggiator">
+
   <category name="MIDI">
+
+    <!-- SCRIPT -->
+
     <reapack name="Euclidean Arpeggiator" type="script">
+
       <version name="1.0.0" author="Javier Pasamontes Martin">
 
-        <source main="main" file="EuclideanArp/ui/ui.lua">https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/ui/ui.lua</source>
+        <source main="main" file="EuclideanArp/ui/ui.lua">
+https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/ui/ui.lua
+        </source>
 
-        <source file="EuclideanArp/controller/controller.lua">https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/controller/controller.lua</source>
-        <source file="EuclideanArp/adapter/offlineAdapter.lua">https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/adapter/offlineAdapter.lua</source>
-        <source file="EuclideanArp/adapter/liveAdapter.lua">https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/adapter/liveAdapter.lua</source>
+        <source file="EuclideanArp/controller/controller.lua">
+https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/controller/controller.lua
+        </source>
 
-        <source file="EuclideanArp/core/bjorklund.lua">https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/core/bjorklund.lua</source>
-        <source file="EuclideanArp/core/generator.lua">https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/core/generator.lua</source>
-        <source file="EuclideanArp/core/pitch.lua">https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/core/pitch.lua</source>
-        <source file="EuclideanArp/core/time.lua">https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/core/time.lua</source>
+        <source file="EuclideanArp/adapter/offlineAdapter.lua">
+https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/adapter/offlineAdapter.lua
+        </source>
 
-        <source file="../Effects/EuclideanArp/euclideanArp.jsfx">https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Effects/EuclideanArp/euclideanArp.jsfx</source>
+        <source file="EuclideanArp/adapter/liveAdapter.lua">
+https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/adapter/liveAdapter.lua
+        </source>
+
+        <source file="EuclideanArp/core/bjorklund.lua">
+https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/core/bjorklund.lua
+        </source>
+
+        <source file="EuclideanArp/core/generator.lua">
+https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/core/generator.lua
+        </source>
+
+        <source file="EuclideanArp/core/pitch.lua">
+https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/core/pitch.lua
+        </source>
+
+        <source file="EuclideanArp/core/time.lua">
+https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Scripts/EuclideanArp/core/time.lua
+        </source>
 
       </version>
+
     </reapack>
+
+    <!-- JSFX -->
+
+    <reapack name="MIDI Euclidean Arpeggiator JSFX" type="effect">
+
+      <version name="1.0.0" author="Javier Pasamontes Martin">
+
+        <source file="EuclideanArp/euclideanArp.jsfx">
+https://raw.githubusercontent.com/jaaviieeer/Euclidean-Arpeggiator/main/Effects/EuclideanArp/euclideanArp.jsfx
+        </source>
+
+      </version>
+
+    </reapack>
+
   </category>
+
 </index>
