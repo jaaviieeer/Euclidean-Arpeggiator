@@ -1,38 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <index version="1" name="Euclidean Arpeggiator">
-
   <category name="MIDI">
-    <reapack
-      name="Euclidean Arpeggiator"
-      type="script"
-      desc="Euclidean rhythm-based MIDI arpeggiator for REAPER with offline and live modes">
-
-      <version name="1.0.0" author="Javier Pasamontes Martin" time="2026-05-11T00:00:00Z">
-
-        <changelog><![CDATA[
-Initial release.
-- Offline MIDI item generation using ReaScript.
-- Live MIDI processing using JSFX.
-- ReaImGui interface.
-- Euclidean rhythm, octave and jumping pattern support.
-        ]]></changelog>
-
+    <reapack name="Euclidean Arpeggiator" type="script">
+      <version name="1.0.0" author="Javier Pasamontes Martin">
         <source main="main">Scripts/EuclideanArp/ui/ui.lua</source>
-
         <source>Scripts/EuclideanArp/controller/controller.lua</source>
-
         <source>Scripts/EuclideanArp/adapter/offlineAdapter.lua</source>
         <source>Scripts/EuclideanArp/adapter/liveAdapter.lua</source>
-
         <source>Scripts/EuclideanArp/core/bjorklund.lua</source>
         <source>Scripts/EuclideanArp/core/generator.lua</source>
         <source>Scripts/EuclideanArp/core/pitch.lua</source>
         <source>Scripts/EuclideanArp/core/time.lua</source>
-
         <source>Effects/EuclideanArp/euclideanArp.jsfx</source>
-
       </version>
     </reapack>
   </category>
-
 </index>
