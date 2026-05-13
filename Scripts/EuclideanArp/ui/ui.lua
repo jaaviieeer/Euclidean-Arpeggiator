@@ -205,30 +205,44 @@ local function loop()
       --notas normales
       if ImGui.RadioButton(ctx, "Whole", config.note_fraction == 1) then
         config.note_fraction = 1
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Half", config.note_fraction == 0.5) then
         config.note_fraction = 0.5
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Quarter", config.note_fraction == 0.25) then
         config.note_fraction = 0.25
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Eighth", config.note_fraction == 0.125) then
         config.note_fraction = 0.125
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Sixteenth", config.note_fraction == 0.0625) then
         config.note_fraction = 0.0625
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Thirty-second", config.note_fraction == 0.03125) then
         config.note_fraction = 0.03125
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Sixty-fourth", config.note_fraction == 0.015625) then
         config.note_fraction = 0.015625
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.Separator(ctx)
       --notas normales
@@ -237,18 +251,26 @@ local function loop()
       --notas puntillo
       if ImGui.RadioButton(ctx, "Dotted Half", config.note_fraction == 3 / 4) then
         config.note_fraction = 3 / 4
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Dotted Quarter", config.note_fraction == 3 / 8) then
         config.note_fraction = 3 / 8
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Dotted Eighth", config.note_fraction == 3 / 16) then
         config.note_fraction = 3 / 16
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Dotted Sixteenth", config.note_fraction == 3 / 32) then
         config.note_fraction = 3 / 32
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.Separator(ctx)
       --notas puntillo
@@ -257,18 +279,26 @@ local function loop()
       --notas triples
       if ImGui.RadioButton(ctx, "Whole Triplet", config.note_fraction == 1 / 3) then
         config.note_fraction = 1 / 3
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Half Triplet", config.note_fraction == 1 / 6) then
         config.note_fraction = 1 / 6
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Quarter Triplet", config.note_fraction == 1 / 12) then
         config.note_fraction = 1 / 12
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Eighth Triplet", config.note_fraction == 1 / 24) then
         config.note_fraction = 1 / 24
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.Separator(ctx)
       --notas triples
