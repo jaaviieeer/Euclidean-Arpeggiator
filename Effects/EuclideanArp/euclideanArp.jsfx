@@ -235,7 +235,7 @@ function rotate_pitches(arr, ord_len) local (i, tmp)(
 @slider 
 steps=slider1|0;
 pulses=slider2|0; 
-pattern_rotation=slider3;
+pattern_rotation = slider3|0;
 pulses > steps ? pulses = steps;
 pattern_len = steps;
 noteorder=slider4|0;
@@ -244,23 +244,23 @@ gate=slider5;
 gate<0?gate=0:gate>5?gate=5;
 
 sync=slider6;
-note_cycling=slider7;
+note_cycling = slider7|0
 
-octaveEnable=slider8;
+octaveEnable = slider8|0;
 octaveSteps=slider9|0;
 octavePulses=slider10|0;
 octavePulses > octaveSteps ? octavePulses = octaveSteps;
 
-jumpingEnable=slider11;
+jumpingEnable = slider11|0;
 jumpingSteps=slider12|0;
 jumpingPulses=slider13|0;
 jumpingPulses > jumpingSteps ? jumpingPulses = jumpingSteps;
 
-run=slider14;
+run = slider14|0;
 
 bjorklund_pattern(pat, steps, pulses);
 
-octavePulses > 0 ? (
+octaveEnable && octavePulses > 0 ? (
   bjorklund_pattern(octpat, octaveSteps, octavePulses);
 ) : (
   i = 0;
@@ -270,7 +270,7 @@ octavePulses > 0 ? (
   );
 );
 
-jumpingPulses > 0 ? (
+jumpingEnable && jumpingPulses > 0 ? (
   bjorklund_pattern(jumpat, jumpingSteps, jumpingPulses);
 ) : (
   i = 0;
@@ -365,12 +365,20 @@ run && ord_count > 0 ? (
     next_pitch = next_note();
 
     next_pitch >= 0 ? (
-      jump_idx = (current_step) % jumpingSteps;
-      jumpingSteps > 0 && jumpat[jump_idx] == 1 ? next_pitch = next_note();//jump pattern
+      jumpingEnable && jumpingSteps > 0 ? (
+        jump_idx = current_step % jumpingSteps;
+        jumpat[jump_idx] == 1 ? (
+          next_pitch = next_note();
+        );
+      );
       active_pitch = next_pitch;
       active_vel = last_vel > 0 ? last_vel : 100;
-      oct_idx = (current_step) % octaveSteps;
-      octaveSteps > 0 && octpat[oct_idx] == 1 ? active_pitch += 12 : 0;//octave pattern
+      octaveEnable && octaveSteps > 0 ? (
+        oct_idx = current_step % octaveSteps;
+        octpat[oct_idx] == 1 ? (
+          active_pitch += 12;
+        );
+      );
       // enviar note on
       midisend(0, 9*16, active_pitch | (active_vel << 8));
 
