@@ -341,8 +341,8 @@ local function loop()
           if config.octave_pulses > config.octave_steps then
             config.octave_pulses = config.octave_steps
           end
-            local ok, msg = controller.apply(config)
-            set_status(msg)
+          local ok, msg = controller.apply(config)
+          set_status(msg)
         end
         ImGui.TableNextColumn(ctx)
         octave_pattern = bj.bjorklund(config.octave_steps, config.octave_pulses)
@@ -371,8 +371,8 @@ local function loop()
           if config.jump_pulses > config.jump_steps then
             config.jump_pulses = config.jump_steps
           end
-            local ok, msg = controller.apply(config)
-            set_status(msg)
+          local ok, msg = controller.apply(config)
+          set_status(msg)
         end
         ImGui.Text(ctx, "Pulses")
         ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
@@ -381,8 +381,8 @@ local function loop()
           if config.jump_pulses > config.jump_steps then
             config.jump_pulses = config.jump_steps
           end
-            local ok, msg = controller.apply(config)
-            set_status(msg)
+          local ok, msg = controller.apply(config)
+          set_status(msg)
         end
         ImGui.TableNextColumn(ctx)
         jump_pattern = bj.bjorklund(config.jump_steps, config.jump_pulses)
@@ -457,10 +457,9 @@ local function loop()
     end
     ImGui.Separator(ctx)
     ImGui.Spacing(ctx)
-
-    local window_w = ImGui.GetContentRegionAvail(ctx)
-    ImGui.SetCursorPosX(ctx, (window_w - 220) * 0.5)
     if config.mode == "offline" then
+      local window_w = ImGui.GetContentRegionAvail(ctx)
+      ImGui.SetCursorPosX(ctx, (window_w - 220) * 0.5)
       if ImGui.Button(ctx, "Generate MIDI item", 220, 34) then
         local ok, msg = controller.apply(config)
         set_status(msg)
