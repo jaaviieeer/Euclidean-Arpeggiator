@@ -48,6 +48,7 @@ ord_count = 0; //cuantas notas en el acorde ordenado
 note_length_samples = 0;
 last_vel = 100;
 pingpong_dir = 1;
+force_trigger = 0;
 
 i = 0;
 loop(MAX_STEPS,
@@ -307,6 +308,12 @@ while (
             held_count += 1;
             held_dirty = 1;
             last_vel = vel;
+
+            held_count == 1 ? (
+            force_trigger = 1;
+            current_step = 0;
+            sample_counter = 0;
+            );
           );
           i += 1;
         );
@@ -348,8 +355,12 @@ step_samples < 1 ? step_samples = 1;
 run && ord_count > 0 ? (
   sample_counter += samplesblock;
 
-  while(sample_counter >= step_samples) (
-  sample_counter -= step_samples;
+  while(force_trigger || sample_counter >= step_samples) (
+    force_trigger ? (
+    force_trigger = 0;
+  ) : (
+    sample_counter -= step_samples;
+  );
 
   // si en este step hay pulso, tocar nota
   pat[current_step] == 1 ? (
