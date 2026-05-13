@@ -98,6 +98,8 @@ local function loop()
     ImGui.SameLine(ctx)
     if ImGui.RadioButton(ctx, "Live", config.mode == "live") then
       config.mode = "live"
+      local ok, msg = controller.apply(config)
+      set_status(msg)
     end
     ImGui.SetCursorPosX(ctx, 200)
     ImGui.TextDisabled(ctx, config.mode == "live"
@@ -119,6 +121,8 @@ local function loop()
             config.pulses = config.steps
           end
           config.cycle_length = config.steps
+          local ok, msg = controller.apply(config)
+          set_status(msg)
         end
         ImGui.Text(ctx, "Pulses")
         ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
@@ -127,15 +131,22 @@ local function loop()
           if config.pulses > config.steps then
             config.pulses = config.steps
           end
+          local ok, msg = controller.apply(config)
+          set_status(msg)
         end
         ImGui.Spacing(ctx)
-        _, config.pattern_rotation = ImGui.Checkbox(ctx, "Enable Pattern Rotation", config.pattern_rotation or false)
+        changed, config.pattern_rotation = ImGui.Checkbox(ctx, "Enable Pattern Rotation",
+          config.pattern_rotation or false)
+        if changed then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
         ImGui.Text(ctx,
           "If enabled, the pattern will rotate (one position to the left) every cycle, creating a more dynamic rhythm")
         ImGui.TableNextColumn(ctx)
         pattern = bj.bjorklund(config.steps, config.pulses)
         ImGui.TextDisabled(ctx, "Pattern")
-        draw_pattern_circle(pattern, config.steps, 180) 
+        draw_pattern_circle(pattern, config.steps, 180)
         ImGui.Text(ctx, string.format("Density: %.2f%%", (config.pulses / config.steps) * 100)) --DENSITY OF PULSES
         ImGui.EndTable(ctx)
       end
@@ -147,22 +158,32 @@ local function loop()
       ImGui.SetCursorPosX(ctx, (avail - total_width) * 0.5)
       if ImGui.RadioButton(ctx, "As played", config.order == 0) then
         config.order = 0
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Ascending", config.order == 1) then
         config.order = 1
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Descending", config.order == 2) then
         config.order = 2
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Ping-Pong", config.order == 3) then
         config.order = 3
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Random", config.order == 4) then
         config.order = 4
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
     end
     if ImGui.CollapsingHeader(ctx, "Timing", true, ImGui.TreeNodeFlags_DefaultOpen) then
@@ -171,7 +192,12 @@ local function loop()
       ImGui.Text(ctx, "Gate")
       ImGui.SameLine(ctx, LABEL_WIDTH)
       ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
-      _, config.gate = ImGui.SliderDouble(ctx, "##Gate", config.gate, 0.1, 5.0)
+      local changed
+      changed, config.gate = ImGui.SliderDouble(ctx, "##Gate", config.gate, 0.1, 5.0)
+      if changed then
+        local ok, msg = controller.apply(config)
+        set_status(msg)
+      end
       ImGui.Spacing(ctx)
       ImGui.SeparatorText(ctx, "Sync / Step Length") --NOTE LENGTH
       ImGui.Text(ctx, "Straight")
@@ -249,7 +275,11 @@ local function loop()
       ImGui.Text(ctx, "Sync")
       ImGui.SameLine(ctx, LABEL_WIDTH)
       ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
-      _, config.note_fraction = ImGui.SliderDouble(ctx, "##SyncSlider", config.note_fraction, 0.0, 1.0)
+      changed, config.note_fraction = ImGui.SliderDouble(ctx, "##SyncSlider", config.note_fraction, 0.0, 1.0)
+      if changed then
+        local ok, msg = controller.apply(config)
+        set_status(msg)
+      end
       ImGui.SameLine(ctx)
       local syncText = tostring(config.note_fraction)
       changed, syncText = ImGui.InputText(ctx, "##SyncInput", syncText)
@@ -263,12 +293,21 @@ local function loop()
             config.note_fraction = val
           end
         end
+        if changed then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       if config.note_fraction < 0.01 then config.note_fraction = 0.01 end
       if config.note_fraction > 1.0 then config.note_fraction = 1.0 end
     end
     if ImGui.CollapsingHeader(ctx, "Advanced patterns", ImGui.TreeNodeFlags_DefaultOpen) then
-      _, config.cycling_enabled = ImGui.Checkbox(ctx, "Enable note list cycling", config.cycling_enabled or false)
+      local changed
+      changed, config.cycling_enabled = ImGui.Checkbox(ctx, "Enable note list cycling", config.cycling_enabled or false)
+      if changed then
+        local ok, msg = controller.apply(config)
+        set_status(msg)
+      end
       ImGui.Spacing(ctx)
       ImGui.SeparatorText(ctx, "Octave shifting pattern")
       if ImGui.BeginTable(ctx, "OctaveTable", 2, ImGui.TableFlags_SizingStretchProp) then
@@ -291,6 +330,8 @@ local function loop()
           if config.octave_pulses > config.octave_steps then
             config.octave_pulses = config.octave_steps
           end
+          local ok, msg = controller.apply(config)
+          set_status(msg)
         end
         ImGui.Text(ctx, "Pulses")
         ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
@@ -300,10 +341,12 @@ local function loop()
           if config.octave_pulses > config.octave_steps then
             config.octave_pulses = config.octave_steps
           end
+            local ok, msg = controller.apply(config)
+            set_status(msg)
         end
         ImGui.TableNextColumn(ctx)
         octave_pattern = bj.bjorklund(config.octave_steps, config.octave_pulses)
-        draw_pattern_circle(octave_pattern, config.octave_steps, 180) 
+        draw_pattern_circle(octave_pattern, config.octave_steps, 180)
         ImGui.EndDisabled(ctx)
         ImGui.EndTable(ctx)
       end
@@ -328,6 +371,8 @@ local function loop()
           if config.jump_pulses > config.jump_steps then
             config.jump_pulses = config.jump_steps
           end
+            local ok, msg = controller.apply(config)
+            set_status(msg)
         end
         ImGui.Text(ctx, "Pulses")
         ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
@@ -336,10 +381,12 @@ local function loop()
           if config.jump_pulses > config.jump_steps then
             config.jump_pulses = config.jump_steps
           end
+            local ok, msg = controller.apply(config)
+            set_status(msg)
         end
         ImGui.TableNextColumn(ctx)
         jump_pattern = bj.bjorklund(config.jump_steps, config.jump_pulses)
-        draw_pattern_circle(jump_pattern, config.jump_steps, 180) 
+        draw_pattern_circle(jump_pattern, config.jump_steps, 180)
         ImGui.EndDisabled(ctx)
         ImGui.EndTable(ctx)
       end
@@ -348,11 +395,20 @@ local function loop()
       ImGui.Text(ctx, "Cycles")
       ImGui.SameLine(ctx, LABEL_WIDTH)
       ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
-      _, config.cycles = ImGui.SliderInt(ctx, "##Cycles", config.cycles, 1, 128)
+      local changed
+      changed, config.cycles = ImGui.SliderInt(ctx, "##Cycles", config.cycles, 1, 128)
+      if changed then
+        local ok, msg = controller.apply(config)
+        set_status(msg)
+      end
       ImGui.Text(ctx, "Cycle length")
       ImGui.SameLine(ctx, LABEL_WIDTH)
       ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
-      _, config.cycle_length = ImGui.SliderInt(ctx, "##Cycle length", config.cycle_length, 1, config.steps)
+      changed, config.cycle_length = ImGui.SliderInt(ctx, "##Cycle length", config.cycle_length, 1, config.steps)
+      if changed then
+        local ok, msg = controller.apply(config)
+        set_status(msg)
+      end
       ImGui.Spacing(ctx)
       ImGui.SeparatorText(ctx, "Multiple chords") --MULTIPLE CHORDS
       ImGui.Text(ctx,
@@ -369,38 +425,47 @@ local function loop()
       --compases
       if ImGui.RadioButton(ctx, "1/4 bar", config.multiple_chord_interval == 1 / 4) then
         config.multiple_chord_interval = 1 / 4
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "1/2 bar", config.multiple_chord_interval == 1 / 2) then
         config.multiple_chord_interval = 1 / 2
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "1 bar", config.multiple_chord_interval == 1) then
         config.multiple_chord_interval = 1
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "2 bars", config.multiple_chord_interval == 2) then
         config.multiple_chord_interval = 2
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "4 bars", config.multiple_chord_interval == 4) then
         config.multiple_chord_interval = 4
+        local ok, msg = controller.apply(config)
+        set_status(msg)
       end
       --compases
       ImGui.EndDisabled(ctx)
     end
     ImGui.Separator(ctx)
-    local button_label = config.mode == "live" and "Connect live engine" or "Generate MIDI item"
     ImGui.Spacing(ctx)
 
     local window_w = ImGui.GetContentRegionAvail(ctx)
     ImGui.SetCursorPosX(ctx, (window_w - 220) * 0.5)
-
-    if ImGui.Button(ctx, button_label, 220, 34) then
-      local ok, msg = controller.apply(config)
-      set_status(msg)
+    if config.mode == "offline" then
+      if ImGui.Button(ctx, "Generate MIDI item", 220, 34) then
+        local ok, msg = controller.apply(config)
+        set_status(msg)
+      end
     end
-
     if status ~= "" then
       ImGui.SameLine(ctx)
       ImGui.TextDisabled(ctx, status)
