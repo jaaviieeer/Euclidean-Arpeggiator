@@ -422,3 +422,25 @@ ord_count <= 0 && active_pitch >= 0 ? (
   note_off_countdown = -1;
   play_idx = 0;
 );
+
+@gfx 500 160
+
+gfx_clear = 0x202020;
+
+gfx_set(1, 1, 1, 1);
+gfx_x = 10;
+gfx_y = 10;
+gfx_drawstr("Pattern: ");
+
+i = 0;
+loop(steps,
+  pat[i] == 1 ? (
+    gfx_set(0, 1, 0, 1);
+    gfx_drawstr("1 ");
+  ) : (
+    gfx_set(0.5, 0.5, 0.5, 1);
+    gfx_drawstr("0 ");
+  );
+
+  i += 1;
+);
