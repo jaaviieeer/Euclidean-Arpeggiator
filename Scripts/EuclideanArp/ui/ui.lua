@@ -121,8 +121,10 @@ local function loop()
             config.pulses = config.steps
           end
           config.cycle_length = config.steps
-          local ok, msg = controller.apply(config)
-          set_status(msg)
+          if config.mode == "live" then
+            local ok, msg = controller.apply(config)
+            set_status(msg)
+          end
         end
         ImGui.Text(ctx, "Pulses")
         ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
@@ -131,13 +133,15 @@ local function loop()
           if config.pulses > config.steps then
             config.pulses = config.steps
           end
-          local ok, msg = controller.apply(config)
-          set_status(msg)
+          if config.mode == "live" then
+            local ok, msg = controller.apply(config)
+            set_status(msg)
+          end
         end
         ImGui.Spacing(ctx)
         changed, config.pattern_rotation = ImGui.Checkbox(ctx, "Enable Pattern Rotation",
           config.pattern_rotation or false)
-        if changed then
+        if changed and config.mode == "live" then
           local ok, msg = controller.apply(config)
           set_status(msg)
         end
@@ -158,32 +162,42 @@ local function loop()
       ImGui.SetCursorPosX(ctx, (avail - total_width) * 0.5)
       if ImGui.RadioButton(ctx, "As played", config.order == 0) then
         config.order = 0
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Ascending", config.order == 1) then
         config.order = 1
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Descending", config.order == 2) then
         config.order = 2
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Ping-Pong", config.order == 3) then
         config.order = 3
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Random", config.order == 4) then
         config.order = 4
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
     end
     if ImGui.CollapsingHeader(ctx, "Timing", true, ImGui.TreeNodeFlags_DefaultOpen) then
@@ -194,7 +208,7 @@ local function loop()
       ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
       local changed
       changed, config.gate = ImGui.SliderDouble(ctx, "##Gate", config.gate, 0.1, 5.0)
-      if changed then
+      if changed and config.mode == "live" then
         local ok, msg = controller.apply(config)
         set_status(msg)
       end
@@ -205,44 +219,58 @@ local function loop()
       --notas normales
       if ImGui.RadioButton(ctx, "Whole", config.note_fraction == 1) then
         config.note_fraction = 1
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Half", config.note_fraction == 0.5) then
         config.note_fraction = 0.5
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Quarter", config.note_fraction == 0.25) then
         config.note_fraction = 0.25
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Eighth", config.note_fraction == 0.125) then
         config.note_fraction = 0.125
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Sixteenth", config.note_fraction == 0.0625) then
         config.note_fraction = 0.0625
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Thirty-second", config.note_fraction == 0.03125) then
         config.note_fraction = 0.03125
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Sixty-fourth", config.note_fraction == 0.015625) then
         config.note_fraction = 0.015625
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.Separator(ctx)
       --notas normales
@@ -251,26 +279,34 @@ local function loop()
       --notas puntillo
       if ImGui.RadioButton(ctx, "Dotted Half", config.note_fraction == 3 / 4) then
         config.note_fraction = 3 / 4
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Dotted Quarter", config.note_fraction == 3 / 8) then
         config.note_fraction = 3 / 8
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Dotted Eighth", config.note_fraction == 3 / 16) then
         config.note_fraction = 3 / 16
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Dotted Sixteenth", config.note_fraction == 3 / 32) then
         config.note_fraction = 3 / 32
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.Separator(ctx)
       --notas puntillo
@@ -279,26 +315,34 @@ local function loop()
       --notas triples
       if ImGui.RadioButton(ctx, "Whole Triplet", config.note_fraction == 1 / 3) then
         config.note_fraction = 1 / 3
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Half Triplet", config.note_fraction == 1 / 6) then
         config.note_fraction = 1 / 6
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Quarter Triplet", config.note_fraction == 1 / 12) then
         config.note_fraction = 1 / 12
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "Eighth Triplet", config.note_fraction == 1 / 24) then
         config.note_fraction = 1 / 24
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.Separator(ctx)
       --notas triples
@@ -306,7 +350,7 @@ local function loop()
       ImGui.SameLine(ctx, LABEL_WIDTH)
       ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
       changed, config.note_fraction = ImGui.SliderDouble(ctx, "##SyncSlider", config.note_fraction, 0.0, 1.0)
-      if changed then
+      if changed and config.mode == "live" then
         local ok, msg = controller.apply(config)
         set_status(msg)
       end
@@ -323,7 +367,7 @@ local function loop()
             config.note_fraction = val
           end
         end
-        if changed then
+        if changed and config.mode == "live" then
           local ok, msg = controller.apply(config)
           set_status(msg)
         end
@@ -334,7 +378,7 @@ local function loop()
     if ImGui.CollapsingHeader(ctx, "Advanced patterns", ImGui.TreeNodeFlags_DefaultOpen) then
       local changed
       changed, config.cycling_enabled = ImGui.Checkbox(ctx, "Enable note list cycling", config.cycling_enabled or false)
-      if changed then
+      if changed and config.mode == "live" then
         local ok, msg = controller.apply(config)
         set_status(msg)
       end
@@ -360,8 +404,10 @@ local function loop()
           if config.octave_pulses > config.octave_steps then
             config.octave_pulses = config.octave_steps
           end
-          local ok, msg = controller.apply(config)
-          set_status(msg)
+          if config.mode == "live" then
+            local ok, msg = controller.apply(config)
+            set_status(msg)
+          end
         end
         ImGui.Text(ctx, "Pulses")
         ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
@@ -371,8 +417,10 @@ local function loop()
           if config.octave_pulses > config.octave_steps then
             config.octave_pulses = config.octave_steps
           end
-          local ok, msg = controller.apply(config)
-          set_status(msg)
+          if config.mode == "live" then
+            local ok, msg = controller.apply(config)
+            set_status(msg)
+          end
         end
         ImGui.TableNextColumn(ctx)
         octave_pattern = bj.bjorklund(config.octave_steps, config.octave_pulses)
@@ -401,8 +449,10 @@ local function loop()
           if config.jump_pulses > config.jump_steps then
             config.jump_pulses = config.jump_steps
           end
-          local ok, msg = controller.apply(config)
-          set_status(msg)
+          if config.mode == "live" then
+            local ok, msg = controller.apply(config)
+            set_status(msg)
+          end
         end
         ImGui.Text(ctx, "Pulses")
         ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
@@ -411,8 +461,10 @@ local function loop()
           if config.jump_pulses > config.jump_steps then
             config.jump_pulses = config.jump_steps
           end
-          local ok, msg = controller.apply(config)
-          set_status(msg)
+          if config.mode == "live" then
+            local ok, msg = controller.apply(config)
+            set_status(msg)
+          end
         end
         ImGui.TableNextColumn(ctx)
         jump_pattern = bj.bjorklund(config.jump_steps, config.jump_pulses)
@@ -427,7 +479,7 @@ local function loop()
       ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
       local changed
       changed, config.cycles = ImGui.SliderInt(ctx, "##Cycles", config.cycles, 1, 128)
-      if changed then
+      if changed and config.mode == "live" then
         local ok, msg = controller.apply(config)
         set_status(msg)
       end
@@ -435,7 +487,7 @@ local function loop()
       ImGui.SameLine(ctx, LABEL_WIDTH)
       ImGui.SetNextItemWidth(ctx, CONTROL_WIDTH)
       changed, config.cycle_length = ImGui.SliderInt(ctx, "##Cycle length", config.cycle_length, 1, config.steps)
-      if changed then
+      if changed and config.mode == "live" then
         local ok, msg = controller.apply(config)
         set_status(msg)
       end
@@ -455,32 +507,42 @@ local function loop()
       --compases
       if ImGui.RadioButton(ctx, "1/4 bar", config.multiple_chord_interval == 1 / 4) then
         config.multiple_chord_interval = 1 / 4
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "1/2 bar", config.multiple_chord_interval == 1 / 2) then
         config.multiple_chord_interval = 1 / 2
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "1 bar", config.multiple_chord_interval == 1) then
         config.multiple_chord_interval = 1
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "2 bars", config.multiple_chord_interval == 2) then
         config.multiple_chord_interval = 2
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       ImGui.SameLine(ctx)
       if ImGui.RadioButton(ctx, "4 bars", config.multiple_chord_interval == 4) then
         config.multiple_chord_interval = 4
-        local ok, msg = controller.apply(config)
-        set_status(msg)
+        if config.mode == "live" then
+          local ok, msg = controller.apply(config)
+          set_status(msg)
+        end
       end
       --compases
       ImGui.EndDisabled(ctx)
