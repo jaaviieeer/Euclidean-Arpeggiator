@@ -1,56 +1,38 @@
 --bjorklund algorithm
 local M = {}
 function M.bjorklund(steps, pulses)
+    steps = tonumber(steps) or 1
+    pulses = tonumber(pulses) or 0
+
+    if steps < 1 then steps = 1 end
     if pulses < 0 then pulses = 0 end
     if pulses > steps then pulses = steps end
-    if pulses == 0 then
-        local r = {}
-        for i = 1, steps do r[i] = 0 end
-        return r
-    end
-    if pulses == steps then
-        local r = {}
-        for i = 1, steps do r[i] = 1 end
-        return r
-    end
 
     local pattern = {}
-    local counts = {}
-    local remainders = {}
 
-    remainders[1] = pulses
-
-    local divisor = steps - pulses
-    local level = 1
-
-    while true do
-        counts[level] = math.floor(divisor / remainders[level])
-        remainders[level + 1] = divisor % remainders[level]
-        divisor = remainders[level]
-        level = level + 1
-        if remainders[level] <= 1 then
-            break
-        end
+    for i = 1, steps do
+        pattern[i] = 0
     end
 
-    counts[level] = divisor
-
-    local function build(l)
-        if l == 0 then
-            table.insert(pattern, 0)
-        elseif l == -1 then
-            table.insert(pattern, 1)
-        else
-            for i = 1, counts[l] do
-                build(l - 1)
-            end
-            if remainders[l] ~= 0 then
-                build(l - 2)
-            end
-        end
+    if pulses == 0 then
+        return pattern
     end
 
-    build(level)
+    if pulses == steps then
+        for i = 1, steps do
+            pattern[i] = 1
+        end
+        return pattern
+    end
+
+    local prev = -1
+
+    for i = 0, steps - 1 do
+        local curr = math.floor((i * pulses) / steps)
+        pattern[i + 1] = curr ~= prev and 1 or 0
+        prev = curr
+    end
+
     return pattern
 end
 
