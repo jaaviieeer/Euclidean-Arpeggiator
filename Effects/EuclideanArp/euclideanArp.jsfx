@@ -32,6 +32,8 @@ MAX_ORD = 32;
 held = remainders + MAX_STEPS + 2;//notas pulsadas
 ord = held + MAX_HELD;//notas ordenadas
 ord2 = ord + MAX_ORD;//aux para pingpong
+held_vel = ord2 + MAX_ORD;//velocidad de cada nota
+ord_vel = held_vel + MAX_HELD;
 held_count = 0;//notas activas
 held_dirty = 1;//flag para indicar que hace falta regenerar
 arp_note_idx = 0;
@@ -75,6 +77,13 @@ i = 0;
 loop(MAX_ORD,
   ord[i] = -1;
   ord2[i] = -1;
+  i += 1;
+);
+
+i = 0;
+loop(MAX_HELD,
+  held[i] = -1;
+  held_vel[i] = 0;
   i += 1;
 );
 
@@ -130,6 +139,7 @@ function rebuild_ordered_notes() local(i, j, tmp, n) (
   loop(MAX_HELD,
     held[i] >= 0 ? (
       ord[n] = held[i];
+      ord_vel[n] = held_vel[i];
       n += 1;
     );
     i += 1;
@@ -149,6 +159,9 @@ function rebuild_ordered_notes() local(i, j, tmp, n) (
           tmp = ord[j];
           ord[j] = ord[j+1];
           ord[j+1] = tmp;
+          tmpv = ord_vel[j];
+          ord_vel[j] = ord_vel[j+1];
+          ord_vel[j+1] = tmpv;
         );
         j += 1;
       );
@@ -177,14 +190,17 @@ function rebuild_ordered_notes() local(i, j, tmp, n) (
 
 function next_note() local(n, idx) (
   ord_count <= 0 ? (
+    next_vel = 0;
     -1;
   ) : (
     noteorder == 4 ? (
       idx = floor(rand(ord_count));
       n = ord[idx];
+      next_vel = ord_vel[idx];
     ) :
     noteorder == 3 ? (
       n = ord[play_idx];
+      next_vel = ord_vel[idx];
 
       ord_count > 1 ? (
         play_idx += pingpong_dir;
@@ -201,6 +217,7 @@ function next_note() local(n, idx) (
       );
     ) : (
       n = ord[play_idx];
+      next_vel = ord_vel[idx];
       play_idx += 1;
       play_idx >= ord_count ? play_idx = 0;
     );
@@ -304,6 +321,7 @@ while (
         loop(MAX_HELD,
           held[i] < 0 && found == 0 ? (
             held[i] = note;
+            held_vel[i] = vel;
             found = 1;
             held_count += 1;
             held_dirty = 1;
@@ -325,6 +343,7 @@ while (
       loop(MAX_HELD,
         held[i] == note ? (
           held[i] = -1;
+          held_vel[i] = 0;
           held_count -= 1;
           held_dirty = 1;
         );
@@ -383,7 +402,7 @@ run && ord_count > 0 ? (
         );
       );
       active_pitch = next_pitch;
-      active_vel = last_vel > 0 ? last_vel : 100;
+      active_vel = next_vel > 0 ? next_vel : 100;
       octaveEnable && octaveSteps > 0 ? (
         oct_idx = current_step % octaveSteps;
         octpat[oct_idx] == 1 ? (
