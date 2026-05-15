@@ -130,6 +130,7 @@ function rebuild_ordered_notes() local(i, j, tmp, n) (
   loop(MAX_ORD,
     ord[i] = -1;
     ord2[i] = -1;
+    ord_vel[i] = -1;
     i += 1;
   );
 
