@@ -200,7 +200,7 @@ function next_note() local(n, idx) (
     ) :
     noteorder == 3 ? (
       n = ord[play_idx];
-      next_vel = ord_vel[idx];
+      next_vel = ord_vel[play_idx];
 
       ord_count > 1 ? (
         play_idx += pingpong_dir;
@@ -217,7 +217,7 @@ function next_note() local(n, idx) (
       );
     ) : (
       n = ord[play_idx];
-      next_vel = ord_vel[idx];
+      next_vel = ord_vel[play_idx];
       play_idx += 1;
       play_idx >= ord_count ? play_idx = 0;
     );
