@@ -66,8 +66,7 @@ Live mode processes incoming MIDI in real time using the JSFX engine.
 2. Add a virtual instrument after the JSFX in the FX chain.
 3. Run the Euclidean Arpeggiator script.
 4. Choose `Live Mode`.
-5. Press `Connect`.
-6. Play MIDI notes or chords.
+5. Adjust parameters live and play MIDI notes or chords.
 
 The JSFX should be placed before the instrument plugin in the FX chain so that the generated MIDI reaches the instrument.
 
