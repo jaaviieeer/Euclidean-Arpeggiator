@@ -380,6 +380,9 @@ run && ord_count > 0 ? (
     force_trigger = 0;
   ) : (
     sample_counter -= step_samples;
+    event_ts = samplesblock - sample_counter;
+    event_ts < 0 ? event_ts = 0;
+    event_ts >= samplesblock ? event_ts = samplesblock - 1;
   );
 
   // si en este step hay pulso, tocar nota
@@ -387,7 +390,7 @@ run && ord_count > 0 ? (
     
     // apagar nota anterior si seguía activa
     active_pitch >= 0 ? (
-      midisend(0, 8*16, active_pitch | (0 << 8));
+      midisend(event_ts, 8*16, active_pitch | (0 << 8));
       active_pitch = -1;
       note_off_countdown = -1;
     );
@@ -411,7 +414,7 @@ run && ord_count > 0 ? (
         );
       );
       // enviar note on
-      midisend(0, 9*16, active_pitch | (active_vel << 8));
+      midisend(event_ts, 9*16, active_pitch | (active_vel << 8));
 
       // calcular duración
       note_length_samples = step_samples * gate;
