@@ -5,7 +5,7 @@ slider2:9<0,128,1>Pulses
 slider3:0<0,1,1>Pattern rotation (0-1)
 slider4:1<0,4,1{As played, Up,Down,PingPong,Random}>Mode
 slider5:1<0.05,5,0.01>Gate
-slider6:0.25<0.01,1,0.01>Sync (whole=1)
+slider6:0.25<0.0001,1,0.000001>Sync (whole=1)
 slider7:0<0,1,1>Note cycling enabled
 slider8:0<0,1,1>Octave pattern enabled
 slider9:4<1,128,1>Oct Steps
@@ -378,6 +378,8 @@ run && ord_count > 0 ? (
   while(force_trigger || sample_counter >= step_samples) (
     force_trigger ? (
     force_trigger = 0;
+    event_ts = 0;
+    sample_counter = 0;
   ) : (
     sample_counter -= step_samples;
     event_ts = samplesblock - sample_counter;
