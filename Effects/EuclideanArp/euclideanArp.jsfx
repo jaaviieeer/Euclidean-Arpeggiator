@@ -329,9 +329,9 @@ while (
             last_vel = vel;
 
             held_count == 1 ? (
-            force_trigger = 1;
-            current_step = 0;
-            sample_counter = 0;
+              force_trigger = 1;
+              current_step = 0;
+              sample_counter = 0;
             );
           );
           i += 1;
@@ -361,10 +361,26 @@ while (
 
 //cambio de notas o soltada o cambio de parametros
 held_dirty ? (
+  old_play_idx = play_idx;
+  old_pingpong_dir = pingpong_dir;
   rebuild_ordered_notes();
   held_dirty = 0;
-  play_idx = 0;
-  pingpong_dir = 1;
+  ord_count > 0 ? (
+    play_idx = old_play_idx;
+
+    play_idx >= ord_count ? (
+      play_idx = play_idx % ord_count;
+    );
+
+    play_idx < 0 ? (
+      play_idx = 0;
+    );
+
+    pingpong_dir = old_pingpong_dir;
+  ) : (
+    play_idx = 0;
+    pingpong_dir = 1;
+  );
 );
 
 //calculo temporal
