@@ -394,6 +394,8 @@ local function loop()
         if changed_enable and not config.octave_enabled then
           config.octave_steps = 0
           config.octave_pulses = 0
+          local ok, msg = controller.apply(config)
+          set_status(msg)
         end
         ImGui.BeginDisabled(ctx, not config.octave_enabled)
         local changed
@@ -439,6 +441,8 @@ local function loop()
         if changed_enable and not config.jump_enabled then
           config.jump_steps = 0
           config.jump_pulses = 0
+          local ok, msg = controller.apply(config)
+          set_status(msg)
         end
         ImGui.BeginDisabled(ctx, not config.jump_enabled)
         local changed

@@ -36,18 +36,20 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
     local totalSteps = cycle_length * cycles
     local events = {}
     local cycle_count = 0
+    local octave_step = 0
+    local jump_step = 0
 
     for step = 0, totalSteps - 1 do
         local patternStep = (step % cycle_length) + 1
         if pattern[patternStep] == 1 then
             if jump_pattern then
-                local jumpStep = (step % jump_steps) + 1
+                local jumpStep = (jump_step % jump_steps) + 1
                 if jump_pattern[jumpStep] == 1 then noteIndex = (noteIndex % #ordered) + 1 end
             end
             local p = ordered[noteIndex]
 
             if octave_pattern then
-                local octStep = (step % octave_steps) + 1
+                local octStep = (octave_step % octave_steps) + 1
                 if octave_pattern[octStep] == 1 then p = p + 12 end
             end
 
@@ -62,6 +64,8 @@ function M.build_events(pitches, config, ppqPerQN, dependencies)
                 chan = 0
             }
             noteIndex = (noteIndex % #ordered) + 1
+            octave_step = octave_step + 1
+            jump_step = jump_step + 1
         end
         cycle_count = cycle_count + 1
         if cycle_count >= cycle_length then

@@ -42,6 +42,8 @@ sample_counter = 0; //contador hasta el sig step
 step_samples = 0; //duracion de un step en muestras
 step_pos = 0; //posición actual en el step
 current_step = 0; //paso actual
+current_octave_step = 0;
+current_jump_step = 0;
 note_off_countdown = -1;
 active_pitch = -1; //nota sonando
 active_vel = 100;
@@ -418,7 +420,7 @@ run && ord_count > 0 ? (
 
     next_pitch >= 0 ? (
       jumpingEnable && jumpingSteps > 0 ? (
-        jump_idx = current_step % jumpingSteps;
+        jump_idx = current_jump_step % jumpingSteps;
         jumpat[jump_idx] == 1 ? (
           next_pitch = next_note();
         );
@@ -426,7 +428,7 @@ run && ord_count > 0 ? (
       active_pitch = next_pitch;
       active_vel = next_vel > 0 ? next_vel : 100;
       octaveEnable && octaveSteps > 0 ? (
-        oct_idx = current_step % octaveSteps;
+        oct_idx = current_octave_step % octaveSteps;
         octpat[oct_idx] == 1 ? (
           active_pitch += 12;
         );
@@ -440,6 +442,8 @@ run && ord_count > 0 ? (
 
       note_off_countdown = note_length_samples;
     );
+    current_octave_step += 1;
+    current_jump_step += 1;
   );
   // avanzar step
   current_step += 1;
@@ -456,6 +460,8 @@ run && ord_count > 0 ? (
 ) : (
   sample_counter = 0;
   current_step = 0;
+  current_octave_step = 0;
+  current_jump_step = 0;
 );
 
 active_pitch >= 0 && note_off_countdown >= 0 ? (
